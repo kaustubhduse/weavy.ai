@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Folder {
+  id        String     @id @default(cuid())
+  name      String
+  userId    String
+  parentId  String?
+  parent    Folder?    @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Folder[]   @relation("FolderHierarchy")
+  workflows Workflow[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Workflow {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userId      String   // Clerk user ID
+  folderId    String?
+  folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  nodes       Node[]
+  edges       Edge[]
+  runs        WorkflowRun[]
+  viewport    Json?    // { x, y, zoom }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([folderId])
+}
+
+model Node {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  type       String   // 'text' | 'image' | 'llm'
+  position   Json     // { x, y }
+  data       Json     // Node-specific data
+  createdAt  DateTime @default(now())
+
+  @@index([workflowId])
+}
+
+model Edge {
+  id           String   @id @default(cuid())
+  workflowId   String
+  workflow     Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  source       String
+  target       String
+  sourceHandle String?
+  targetHandle String?
+  type         String?
+  createdAt    DateTime @default(now())
+
+  @@index([workflowId])
+}
+
+model WorkflowRun {
+  id          String    @id @default(cuid())
+  workflowId  String
+  workflow    Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  status      String    // 'PENDING', 'RUNNING', 'COMPLETED', 'FAILED'
+  scope       String    @default("FULL") // 'FULL', 'PARTIAL', 'SINGLE'
+  triggerType String    @default("MANUAL") // 'MANUAL', 'SCHEDULED', 'WEBHOOK'
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  duration    Int?      // in milliseconds
+  nodeRuns    NodeRun[]
+  
+  @@index([workflowId])
+}
+
+model NodeRun {
+  id          String      @id @default(cuid())
+  runId       String
+  run         WorkflowRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  nodeId      String      // ID of the node in the JSON
+  status      String      // 'PENDING', 'RUNNING', 'COMPLETED', 'FAILED'
+  inputs      Json?
+  outputs     Json?
+  error       String?
+  startedAt   DateTime    @default(now())
+  finishedAt  DateTime?
+  duration    Int?
+
+  @@index([runId])
+}
