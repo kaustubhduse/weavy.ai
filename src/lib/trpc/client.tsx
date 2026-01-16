@@ -16,7 +16,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
     api.createClient({
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_APP_URL || ''}/api/trpc`,
+          url: '/api/trpc',  // Use relative URL to avoid CORS on Vercel previews
           transformer: superjson,
         }),
       ],
