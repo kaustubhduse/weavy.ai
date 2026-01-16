@@ -5,13 +5,14 @@ import { TRPCError } from '@trpc/server'
 export const historyRouter = createTRPCRouter({
   getWorkflowRuns: publicProcedure
     .input(z.object({
-      workflowId: z.string()
+      workflowId: z.string(),
+      limit: z.number().optional().default(3)  // Default to 3 for fast loading
     }))
     .query(async ({ ctx, input }) => {
       const runs = await ctx.db.workflowRun.findMany({
         where: { workflowId: input.workflowId },
         orderBy: { startedAt: 'desc' },
-        take: 50
+        take: input.limit
       })
       return runs
     }),

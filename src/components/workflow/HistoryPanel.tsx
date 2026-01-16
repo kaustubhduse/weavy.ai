@@ -73,13 +73,60 @@ const OutputDisplay = ({ output }: { output: any }) => {
     );
 };
 
+// Lazy load node runs only when expanded
+function ExpandedRunDetails({ runId }: { runId: string }) {
+  const { data: runDetails, isLoading } = api.history.getRunDetails.useQuery({ runId })
+
+  if (isLoading) {
+    return (
+      <div className="border-t border-zinc-800 bg-zinc-950/30 p-4 flex justify-center">
+        <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+      </div>
+    )
+  }
+
+  if (!runDetails?.nodeRuns) return null
+
+  return (
+    <div className="border-t border-zinc-800 bg-zinc-950/30 p-2 space-y-1">
+      {runDetails.nodeRuns.map((nodeRun) => (
+        <div key={nodeRun.id} className="flex flex-col gap-1 p-2 rounded hover:bg-zinc-900 transition-colors">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <StatusIcon status={nodeRun.status} size={12} />
+              <span className="font-mono text-xs text-zinc-300 truncate">
+                node-{nodeRun.nodeId.slice(0, 8)}...
+              </span>
+            </div>
+            {nodeRun.duration && (
+              <span className="text-xs text-zinc-600">{(nodeRun.duration / 1000).toFixed(1)}s</span>
+            )}
+          </div>
+          
+          {nodeRun.outputs && (
+            <div className="pl-5 mt-1">
+              <OutputDisplay output={nodeRun.outputs} />
+            </div>
+          )}
+          {nodeRun.error && (
+            <div className="text-red-400 mt-1 bg-red-950/20 p-1.5 rounded border border-red-900/30 text-xs pl-5">
+              Error: {nodeRun.error}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function HistoryPanel({ workflowId, isOpen, onClose }: HistoryPanelProps) {
-  const { data: runs, isLoading, refetch } = api.workflow.getHistory.useQuery(
-    { workflowId },
+  const [showAll, setShowAll] = useState(false)
+  const [expandedRuns, setExpandedRuns] = useState<string[]>([])
+
+  const { data: runs, isLoading, refetch } = api.history.getWorkflowRuns.useQuery(
+    { workflowId, limit: showAll ? 50 : 3 },
     { refetchInterval: 1000, enabled: isOpen } 
   )
-
-  const [expandedRuns, setExpandedRuns] = useState<string[]>([])
 
   const toggleRun = (runId: string) => {
     setExpandedRuns(prev => 
@@ -161,39 +208,23 @@ export function HistoryPanel({ workflowId, isOpen, onClose }: HistoryPanelProps)
                     </button>
                     {/* Expanded Content ... */}
                     {expandedRuns.includes(run.id) && (
-                        <div className="border-t border-zinc-800 bg-zinc-950/30 p-2 space-y-1">
-                            {run.nodeRuns.map((nodeRun) => (
-                                <div key={nodeRun.id} className="flex flex-col gap-1 p-2 rounded hover:bg-zinc-900 transition-colors">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <StatusIcon status={nodeRun.status} size={12} />
-                                            <span className="font-mono text-xs text-zinc-300 truncate">
-                                                node-{nodeRun.nodeId.slice(0, 8)}...
-                                            </span>
-                                        </div>
-                                        {nodeRun.duration && (
-                                            <span className="text-xs text-zinc-600">{(nodeRun.duration / 1000).toFixed(1)}s</span>
-                                        )}
-                                    </div>
-                                    
-                                    {nodeRun.outputs && (
-                                        <div className="pl-5 mt-1">
-                                            {/* @ts-ignore */}
-                                            <OutputDisplay output={nodeRun.outputs} />
-                                        </div>
-                                    )}
-                                    {nodeRun.error && (
-                                        <div className="text-red-400 mt-1 bg-red-950/20 p-1.5 rounded border border-red-900/30 text-xs pl-5">
-                                            Error: {nodeRun.error}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                        <ExpandedRunDetails runId={run.id} />
                     )}
-                </div>
-                ))}
-            </div>
+                 </div>
+                 ))}            </div>
+            
+            {/* Show More Button */}
+            {!showAll && runs && runs.length === 3 && (
+              <div className="p-3 border-t border-zinc-800">
+                <button
+                  onClick={() => setShowAll(true)}
+                  className="w-full py-2 px-3 text-sm text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 hover:bg-zinc-800 rounded-md transition-colors flex items-center justify-center gap-2"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                  Show More
+                </button>
+              </div>
+            )}
             </ScrollArea>
         )}
       </div>

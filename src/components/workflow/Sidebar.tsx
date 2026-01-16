@@ -282,10 +282,6 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
               </div>
             </div>
             
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Toolbox</h3>
-              <p className="text-xs text-zinc-500 pl-1">Editing</p>
-            </div>
           </div>
 
           {/* Footer Save Button */}
