@@ -61,6 +61,13 @@ export async function executeWorkflow(
     try {
         // Continue until all nodes are completed
         while (completedNodes.size < nodes.length) {
+            // Check if workflow has been marked as failed (by user or system)
+            const currentRun = await ctx.db.workflowRun.findUnique({ where: { id: runId } });
+            if (currentRun && (currentRun.status === 'FAILED' || currentRun.status === 'CANCELLED')) {
+                console.log('[Workflow] Detected FAILED/CANCELLED status, stopping execution...');
+                break;
+            }
+            
             // Find nodes that are:
             // 1. Not completed
             // 2. Not currently running
