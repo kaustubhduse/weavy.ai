@@ -22,7 +22,7 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
 
         // If images are provided, explicitly ask the LLM to analyze them first
         if (images && images.length > 0) {
-            const enhancedPrompt = `I'm providing ${images.length} image(s) for you to analyze.\n\nFIRST: Carefully examine and describe what you see in each image.\nTHEN: ${prompt}\n\nRemember to reference the visual content from the images in your response.`;
+            const enhancedPrompt = `I'm providing ${images.length} image(s) for you to analyze.\n\nSilently examine what you see in each image, then: ${prompt}\n\nIMPORTANT: Do NOT include an "Image Analysis" section. Just provide the final requested output directly. Reference the visual content naturally in your response. Avoid using markdown formatting like **text** - use plain text only.`;
             parts.push({ text: enhancedPrompt });
         } else {
             parts.push({ text: prompt });
