@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🧹 Cleaning existing data...')
   
-  // Delete all existing workflows and related data
   await prisma.edge.deleteMany()
   await prisma.node.deleteMany()
   await prisma.workflow.deleteMany()
@@ -13,22 +12,19 @@ async function main() {
   console.log('✅ Cleanup complete!')
   console.log('🌱 Seeding database...')
   
-  // Create a demo user ID (replace with your actual Clerk user ID for testing)
   const userId = 'user_demo'
   
-  // Create a sample workflow
   const workflow = await prisma.workflow.create({
     data: {
       name: 'Product Marketing Workflow',
       description: 'Analyze product images and generate marketing content',
-      userId: 'sample_user', // Replace with actual Clerk user ID
+      userId: 'sample_user',
       viewport: { x: 0, y: 0, zoom: 1 },
     },
   })
 
   console.log('Created workflow:', workflow.id)
 
-  // Create nodes
   const nodes = [
     {
       id: 'image-1',
@@ -149,9 +145,7 @@ async function main() {
 
   await prisma.node.createMany({ data: nodes })
 
-  // Create edges (connections)
   const edges = [
-    // Images to Analyze LLM
     {
       id: 'edge-1',
       workflowId: workflow.id,
@@ -176,7 +170,6 @@ async function main() {
       sourceHandle: 'image-output',
       targetHandle: 'images-input',
     },
-    // System prompt to Analyze LLM
     {
       id: 'edge-4',
       workflowId: workflow.id,
@@ -185,7 +178,6 @@ async function main() {
       sourceHandle: 'text-output',
       targetHandle: 'system_prompt-input',
     },
-    // User message to Analyze LLM
     {
       id: 'edge-5',
       workflowId: workflow.id,
@@ -194,7 +186,6 @@ async function main() {
       sourceHandle: 'text-output',
       targetHandle: 'user_message-input',
     },
-    // Analyze LLM to downstream LLMs
     {
       id: 'edge-6',
       workflowId: workflow.id,
@@ -219,7 +210,6 @@ async function main() {
       sourceHandle: 'text-output',
       targetHandle: 'user_message-input',
     },
-    // Prompts to downstream LLMs
     {
       id: 'edge-9',
       workflowId: workflow.id,

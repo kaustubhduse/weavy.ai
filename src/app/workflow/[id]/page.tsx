@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/workflow/Sidebar'
 import { NavigationRail } from '@/components/workflow/NavigationRail'
@@ -8,14 +8,12 @@ import { Canvas } from '@/components/workflow/Canvas'
 
 import { api } from '@/lib/trpc/client'
 import { useWorkflowStore } from '@/lib/store/workflowStore'
-import { UserButton } from '@clerk/nextjs'
-import { Home, Sparkles, History } from 'lucide-react'
+import { History } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { HistoryPanel } from '@/components/workflow/HistoryPanel'
 
 export default function WorkflowPage() {
   const params = useParams()
-  const router = useRouter()
   const workflowId = params.id as string
   const { data: workflow, isLoading } = api.workflow.get.useQuery({ id: workflowId })
   const utils = api.useUtils()
@@ -66,7 +64,6 @@ export default function WorkflowPage() {
     }
   }, [workflow, loadWorkflow, hasLoadedInitialData])
   
-  // Warn before leaving with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       const hasChanges = nodes.length > 0 || edges.length > 0
@@ -98,7 +95,7 @@ export default function WorkflowPage() {
 
   return (
     <div className="h-screen flex bg-zinc-950 text-white overflow-hidden">
-      {/* Fixed Left Navigation Rail */}
+      {/* Left Navigation Rail */}
       <NavigationRail activeTab={activeSidebarTab} onTabChange={setActiveSidebarTab} />
 
       <div className="flex-1 flex flex-col relative min-w-0">

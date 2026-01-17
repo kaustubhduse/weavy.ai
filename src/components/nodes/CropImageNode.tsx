@@ -1,22 +1,13 @@
 import { memo, useCallback, useState, useRef, useEffect } from 'react'
-import { Handle, Position, NodeProps, useHandleConnections } from '@xyflow/react'
+import { Handle, Position, NodeProps } from '@xyflow/react'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Crop } from 'lucide-react'
 import { useWorkflowStore } from '@/lib/store/workflowStore'
-import { cn } from '@/lib/utils'
 import { NodeActionsMenu } from './NodeActionsMenu'
 
-// Helper component for parameter inputs
-const ParamInput = ({ 
-  id, 
-  label, 
-  value, 
-  handleId, 
-  onChange,
-  nodeId 
-}: { 
+const ParamInput = ({ id, label, value, handleId, onChange, nodeId }: { 
   id: string, 
   label: string, 
   value: string | number, 
@@ -24,14 +15,6 @@ const ParamInput = ({
   onChange: (val: string) => void,
   nodeId: string
 }) => {
-  const connections = useHandleConnections({
-    type: 'target',
-    id: handleId,
-    nodeId: nodeId 
-  });
-
-  const isConnected = connections.length > 0;
-
   return (
     <div className="flex items-center justify-between gap-2 relative">
       <div className="relative pl-1">
