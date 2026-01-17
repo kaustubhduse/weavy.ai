@@ -170,8 +170,9 @@ export async function executeWorkflow(
                             }
                         }
                         else if (edge.targetHandle === 'video-url-input') {
-                             // Fix: check for text specifically if needed, but usually videoUrl or output
+                            console.log('[Engine] Processing video-url-input, sourceOutput:', JSON.stringify(sourceOutput).substring(0, 200));
                             inputVideo = sourceOutput.output || sourceOutput.videoUrl || sourceOutput.text;
+                            console.log('[Engine] Extracted video URL:', typeof inputVideo, inputVideo?.substring?.(0, 100));
                         }
                     }
 
@@ -212,6 +213,9 @@ export async function executeWorkflow(
                     }
                     else if (node.type === 'extract-frame') {
                          if (!inputVideo) throw new Error("No video input provided. Connect a video source.");
+                         
+                         console.log('[Engine] Calling FFmpeg extract with inputVideo:', typeof inputVideo, inputVideo?.substring?.(0, 100));
+                         
                          const result = await runFFmpeg({
                              operation: 'extract',
                              inputUrl: inputVideo,
