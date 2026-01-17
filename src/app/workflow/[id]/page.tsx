@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/workflow/Sidebar'
-import { NavigationRail } from '@/components/workflow/NavigationRail'
+import { LeftSide } from '@/components/workflow/left-side'
 import { Canvas } from '@/components/workflow/Canvas'
 
 import { api } from '@/lib/trpc/client'
@@ -96,7 +96,7 @@ export default function WorkflowPage() {
   return (
     <div className="h-screen flex bg-zinc-950 text-white overflow-hidden">
       {/* Left Navigation Rail */}
-      <NavigationRail activeTab={activeSidebarTab} onTabChange={setActiveSidebarTab} />
+      <LeftSide activeTab={activeSidebarTab} onTabChange={setActiveSidebarTab} />
 
       <div className="flex-1 flex flex-col relative min-w-0">
         <div className="flex-1 flex overflow-hidden">

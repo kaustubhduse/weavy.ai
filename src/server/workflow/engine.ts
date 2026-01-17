@@ -7,49 +7,12 @@ type NodeData = any;
 type Node = { id: string; type: string; data: NodeData };
 type Edge = { id: string; source: string; target: string; sourceHandle?: string | null; targetHandle?: string | null };
 
-// Topological Sort Helper
-function topologicalSort(nodes: Node[], edges: Edge[]): Node[] {
-  const inDegree = new Map<string, number>();
-  const adj = new Map<string, string[]>();
-
-  nodes.forEach(n => {
-    inDegree.set(n.id, 0);
-    adj.set(n.id, []);
-  });
-
-  edges.forEach(e => {
-    if (adj.has(e.source) && inDegree.has(e.target)) {
-      adj.get(e.source)!.push(e.target);
-      inDegree.set(e.target, (inDegree.get(e.target) || 0) + 1);
-    }
-  });
-
-  const queue: string[] = [];
-  inDegree.forEach((deg, id) => {
-    if (deg === 0) queue.push(id);
-  });
-
-  const sorted: Node[] = [];
-  while (queue.length > 0) {
-    const u = queue.shift()!;
-    sorted.push(nodes.find(n => n.id === u)!);
-
-    if (adj.has(u)) {
-      adj.get(u)!.forEach(v => {
-        inDegree.set(v, (inDegree.get(v) || 0) - 1);
-        if (inDegree.get(v) === 0) queue.push(v);
-      });
-    }
-  }
-
-  return sorted;
-}
 
 export async function executeWorkflow(
     ctx: { db: PrismaClient }, 
     payload: { workflowId: string; nodes: Node[]; edges: Edge[]; runId: string }
 ) {
-    const { workflowId, nodes, edges, runId } = payload;
+    const { nodes, edges, runId } = payload;
     
     const run = await ctx.db.workflowRun.findUnique({ where: { id: runId } });
     if (!run) throw new Error("Workflow Run not found");
@@ -104,15 +67,6 @@ export async function executeWorkflow(
             }
 
             if (executableNodes.length === 0) {
-                // Wait for some running nodes to finish before checking again
-                // In a real event-loop, we'd wait for a promise. 
-                // Since we are iterating, we await the *promises* of the current batch.
-                // However, the logic below executes the batch immediately.
-                // If we are here, it means we have running nodes but no NEW nodes can start yet.
-                // We should just wait for the current batch loop to continue.
-                // But since we await Promise.all below, we won't hit this 'continue' state usually.
-                // Actually, due to the structure, we identify a batch, await it, then loop.
-                // So if executableNodes is empty, it means we are truly done or stuck.
                 break; 
             }
 
@@ -121,7 +75,6 @@ export async function executeWorkflow(
 
             // Execute batch in parallel
             await Promise.all(executableNodes.map(async (node) => {
-                // Log Start
                 const nodeRun = await ctx.db.nodeRun.create({
                     data: {
                         runId: run.id,
@@ -136,7 +89,6 @@ export async function executeWorkflow(
                 let output: any = null;
 
                 try {
-                    // Resolve Inputs
                     const incomingEdges = edges.filter(e => e.target === node.id);
                     const systemPrompts: string[] = [];
                     const userMessages: string[] = [];
@@ -151,11 +103,9 @@ export async function executeWorkflow(
                         if (edge.targetHandle === 'system_prompt-input') systemPrompts.push(sourceOutput.text || '');
                         else if (edge.targetHandle === 'user_message-input') userMessages.push(sourceOutput.text || '');
                         else if (edge.targetHandle === 'images-input') {
-                            // Aggressive image collection
                             if (sourceOutput.output) inputImages.push(sourceOutput.output);
                             else if (sourceOutput.imageData) inputImages.push(sourceOutput.imageData);
                             else if (Array.isArray(sourceOutput.images)) inputImages.push(...sourceOutput.images);
-                            // Also check for 'text' if it looks like a url (rare but possible)
                             else if (sourceOutput.text && (sourceOutput.text.startsWith('http') || sourceOutput.text.startsWith('data:'))) {
                                 inputImages.push(sourceOutput.text);
                             }
@@ -224,10 +174,9 @@ export async function executeWorkflow(
                          output = { output: result.output };
                     }
 
-                    // Success
                     nodeOutputs.set(node.id, output);
                     completedNodes.add(node.id);
-                    runningNodes.delete(node.id); // Remove from running
+                    runningNodes.delete(node.id); 
 
                     await ctx.db.nodeRun.update({
                         where: { id: nodeRun.id },
@@ -240,7 +189,6 @@ export async function executeWorkflow(
                     });
 
                 } catch (err: any) {
-                    // Failure
                     console.error(`Node ${node.id} failed:`, err);
                     await ctx.db.nodeRun.update({
                         where: { id: nodeRun.id },

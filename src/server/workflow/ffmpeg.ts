@@ -4,25 +4,16 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-// Configure FFmpeg to use static binary (works on Vercel)
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-// Helper to download file or decode base64 to temp path
-async function downloadFile(url: string, outputPath: string) {
-  // Type and value validation
-  console.log('[FFmpeg] Received URL - Type:', typeof url, 'Value:', url);
-  
+async function downloadFile(url: string, outputPath: string) {  
   if (!url || url === 'undefined' || url === 'null') {
     throw new Error(`Input URL is empty or invalid: ${url}`);
   }
   
-  // Ensure it's a string and trim whitespace
   const cleanUrl = String(url).trim();
-  console.log('[FFmpeg] Clean URL preview (first 100 chars):', cleanUrl.substring(0, 100));
   
-  // Handle base64 data URLs (e.g., from Upload or Crop nodes)
   if (cleanUrl.startsWith('data:')) {
-    console.log('[FFmpeg] Detected data URL, extracting base64...');
     const match = cleanUrl.match(/^data:([^;]+);base64,(.+)$/);
     if (!match) {
       throw new Error(`Invalid base64 data URL format. URL starts with: ${cleanUrl.substring(0, 50)}`);
@@ -30,23 +21,18 @@ async function downloadFile(url: string, outputPath: string) {
     
     const mimeType = match[1];
     const base64Data = match[2];
-    console.log('[FFmpeg] MIME type:', mimeType, 'Base64 length:', base64Data.length);
     
     const buffer = Buffer.from(base64Data, 'base64');
     fs.writeFileSync(outputPath, buffer);
-    console.log('[FFmpeg] ✅ Successfully decoded base64 data, file size:', buffer.length, 'bytes');
     return;
   }
   
-  // Handle regular HTTP/HTTPS URLs
-  console.log('[FFmpeg] Treating as HTTP URL, fetching...');
   const response = await fetch(cleanUrl);
   if (!response.ok) {
     throw new Error(`Failed to download file from ${cleanUrl.substring(0, 50)}: ${response.statusText} (${response.status})`);
   }
   const buffer = await response.arrayBuffer();
   fs.writeFileSync(outputPath, Buffer.from(buffer));
-  console.log('[FFmpeg] ✅ Downloaded file, size:', buffer.byteLength, 'bytes');
 }
 
 export async function runFFmpeg(payload: { 

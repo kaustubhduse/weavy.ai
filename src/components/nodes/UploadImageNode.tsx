@@ -167,7 +167,7 @@ export const UploadImageNode = memo(({ id, data, selected }: NodeProps) => {
   }
 
   return (
-    <Card className={`w-80 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-blue-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''}`}>
+    <Card className={`w-80 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-blue-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-2">

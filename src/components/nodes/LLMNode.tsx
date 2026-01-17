@@ -22,8 +22,6 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
   const [label, setLabel] = useState(nodeData.label || 'LLM')
   
   const updateNode = useWorkflowStore((state) => state.updateNode)
-  const duplicateNode = useWorkflowStore((state) => state.duplicateNode)
-  const deleteNode = useWorkflowStore((state) => state.deleteNode)
   const { nodes, edges } = useWorkflowStore()
   const params = useParams()
   
@@ -135,7 +133,7 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
   }, [isRenaming])
 
   return (
-    <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''}`}>
+    <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-teal-900/30 flex items-center justify-center border border-teal-700/50">

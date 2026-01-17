@@ -20,7 +20,6 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
             parts.push({ text: `System Instruction: ${system}\n\n` });
         }
 
-        // If images are provided, explicitly ask the LLM to analyze them first
         if (images && images.length > 0) {
             const enhancedPrompt = `I'm providing ${images.length} image(s) for you to analyze.\n\nSilently examine what you see in each image, then: ${prompt}\n\nIMPORTANT: Do NOT include an "Image Analysis" section. Just provide the final requested output directly. Reference the visual content naturally in your response. Avoid using markdown formatting like **text** - use plain text only.`;
             parts.push({ text: enhancedPrompt });
@@ -50,9 +49,9 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
                             inlineData: { mimeType, data: base64 }
                         });
                     }
-                } catch (e) {
+                } 
+                catch (e) {
                     console.error("LLM: Failed to process image:", imgUrl, e);
-                    // Continue, maybe strict?
                 }
             }
         }
@@ -63,23 +62,23 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
     };
 
     try {
-        // Try Primary Model (2.0 Flash Lite - Lightweight & Verified)
         const output = await executeWithModel("gemini-2.0-flash-lite");
         return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
-    } catch (error: any) {
+    } 
+    catch (error: any) {
         console.warn("Primary model (gemini-2.0-flash-lite) failed, attempting fallback...", error.message);
         
         try {
-            // Try Fallback 1: 2.5 Flash (Verified Available)
             const output = await executeWithModel("gemini-2.5-flash");
             return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
-        } catch (fallbackError: any) {
+        } 
+        catch (fallbackError: any) {
              console.warn("Fallback 1 failed, attempting gemini-2.0-flash...", fallbackError.message);
-             // Try Fallback 2: 2.0 Flash (Verified Available)
              try {
                 const output = await executeWithModel("gemini-2.0-flash");
                 return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
-             } catch (finalError: any) {
+             } 
+             catch (finalError: any) {
                  console.error("All LLM models failed", finalError);
                  throw finalError;
              }

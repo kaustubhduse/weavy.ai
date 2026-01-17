@@ -15,8 +15,6 @@ export function TextNode({ id, data }: NodeProps<Node<any>>) {
   const [label, setLabel] = useState(nodeData.label || 'Prompt')
   
   const updateNode = useWorkflowStore((state) => state.updateNode)
-  const deleteNode = useWorkflowStore((state) => state.deleteNode)
-  const duplicateNode = useWorkflowStore((state) => state.duplicateNode)
   
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -59,7 +57,7 @@ export function TextNode({ id, data }: NodeProps<Node<any>>) {
   }, [isRenaming])
 
   return (
-    <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''}`}>
+    <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
       <div className="flex items-center justify-between p-4 pb-2">
         {isRenaming ? (
           <Input

@@ -2,6 +2,7 @@ export interface TextNodeData {
   label: string
   text: string
   locked?: boolean
+  isExecuting?: boolean
 }
 
 export interface ImageNodeData {
@@ -10,6 +11,7 @@ export interface ImageNodeData {
   imageData?: string 
   images?: string[]
   locked?: boolean
+  isExecuting?: boolean
 }
 
 export interface LLMNodeData {
@@ -20,6 +22,7 @@ export interface LLMNodeData {
   loading?: boolean
   error?: string
   locked?: boolean
+  isExecuting?: boolean
 }
 
 export type NodeType = 'text' | 'image' | 'llm'

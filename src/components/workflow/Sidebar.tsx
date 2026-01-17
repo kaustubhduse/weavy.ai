@@ -1,24 +1,9 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
-import { 
-  Sparkles, 
-  Search,
-  ArrowUpDown,
-  Download,
-  Bot,
-  Type,
-  Image as ImageIcon,
-  Video,
-  Crop,
-  Film,
-  Save
-} from 'lucide-react'
-import { useWorkflowStore } from '@/lib/store/workflowStore'
-import { type Node } from '@xyflow/react'
+import { Sparkles, Search, ArrowUpDown, Type, Image as ImageIcon, Video, Crop, Film, Save } from 'lucide-react'
 
 interface SidebarProps {
   activeTab: 'search' | 'quick-access' | null
@@ -32,7 +17,6 @@ type NodeType = 'text' | 'upload-image' | 'upload-video' | 'llm' | 'crop-image' 
 
 export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRename, onSave, isSaving }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const { nodes, addNode } = useWorkflowStore()
   const [tempName, setTempName] = useState(workflowName)
 
   useEffect(() => {
@@ -53,93 +37,10 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
     }
     if (e.key === 'Escape') {
       setTempName(workflowName)
-      // Optional: blur the input if desired, e.g. (e.target as HTMLInputElement).blur()
       ;(e.target as HTMLInputElement).blur()
     }
   }
 
-  // Smart positioning: Find free space on canvas
-  const findFreePosition = (): { x: number; y: number } => {
-    if (nodes.length === 0) {
-      return { x: 100, y: 100 }
-    }
-
-    // Try grid positions
-    const gridSize = 300
-    const maxAttempts = 50
-    
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const row = Math.floor(attempt / 5)
-      const col = attempt % 5
-      const testX = 100 + col * gridSize
-      const testY = 100 + row * gridSize
-      
-      // Check if this position overlaps with existing nodes
-      const hasOverlap = nodes.some((node) => {
-        const nodeX = node.position.x
-        const nodeY = node.position.y
-        const distance = Math.sqrt(
-          Math.pow(testX - nodeX, 2) + Math.pow(testY - nodeY, 2)
-        )
-        return distance < 250 // Minimum distance between nodes
-      })
-      
-      if (!hasOverlap) {
-        return { x: testX, y: testY }
-      }
-    }
-    
-    // Fallback: place to the right of all nodes
-    const maxX = Math.max(...nodes.map((n) => n.position.x))
-    return { x: maxX + 350, y: 100 }
-  }
-
-  /* 
-   * Updated helper to accept label override 
-   */
-  const createNode = (type: NodeType, labelOverride?: string) => {
-    const id = `${type}-${Date.now()}`
-    const position = findFreePosition()
-    
-    let data: any = {}
-    let label = labelOverride || ''
-    
-    switch (type) {
-      case 'text':
-        if (!label) label = 'Text Node'
-        data = { label, text: '' }
-        break
-      case 'upload-image':
-        if (!label) label = 'Upload Image'
-        data = { label, imageData: '' }
-        break
-      case 'upload-video':
-        if (!label) label = 'Upload Video'
-        data = { label, videoUrl: '' }
-        break
-      case 'llm':
-        if (!label) label = 'Run Any LLM'
-        data = { label, model: 'gemini-2.0-flash-lite', temperature: 0.7 }
-        break
-      case 'crop-image':
-        if (!label) label = 'Crop Image'
-        data = { label, x: 0, y: 0, width: 100, height: 100 }
-        break
-      case 'extract-frame':
-        if (!label) label = 'Extract Frame'
-        data = { label, timestamp: 0 }
-        break
-    }
-    
-    const newNode: Node = {
-      id,
-      type,
-      position,
-      data,
-    }
-    
-    addNode(newNode)
-  }
 
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType)
@@ -210,7 +111,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
               <div className="grid grid-cols-2 gap-3">
                 {/* 1. Text Node */}
                 <Button
-                  onClick={() => createNode('text', 'Text Node')}
+
                   onDragStart={(e) => onDragStart(e, 'text')}
                   draggable
                   variant="outline"
@@ -222,7 +123,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
                 
                 {/* 2. Upload Image Node */}
                 <Button
-                  onClick={() => createNode('upload-image', 'Upload Image')}
+
                   onDragStart={(e) => onDragStart(e, 'upload-image')}
                   draggable
                   variant="outline"
@@ -234,7 +135,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
 
                 {/* 3. Upload Video Node */}
                 <Button
-                  onClick={() => createNode('upload-video', 'Upload Video')}
+
                   onDragStart={(e) => onDragStart(e, 'upload-video')}
                   draggable
                   variant="outline"
@@ -246,7 +147,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
                 
                 {/* 4. Run Any LLM */}
                 <Button
-                  onClick={() => createNode('llm', 'Run Any LLM')}
+
                   onDragStart={(e) => onDragStart(e, 'llm')}
                   draggable
                   variant="outline"
@@ -258,7 +159,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
 
                 {/* 5. Crop Image Node */}
                 <Button
-                  onClick={() => createNode('crop-image', 'Crop Image')}
+
                   onDragStart={(e) => onDragStart(e, 'crop-image')}
                   draggable
                   variant="outline"
@@ -270,7 +171,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
 
                 {/* 6. Extract Frame Node */}
                 <Button
-                  onClick={() => createNode('extract-frame', 'Extract Frame')}
+
                   onDragStart={(e) => onDragStart(e, 'extract-frame')}
                   draggable
                   variant="outline"

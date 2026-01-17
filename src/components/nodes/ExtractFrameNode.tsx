@@ -1,53 +1,11 @@
 import { memo, useCallback, useState, useRef, useEffect } from 'react'
-import { Handle, Position, NodeProps, useHandleConnections } from '@xyflow/react'
+import { Handle, Position, NodeProps } from '@xyflow/react'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Film } from 'lucide-react'
 import { useWorkflowStore } from '@/lib/store/workflowStore'
-import { cn } from '@/lib/utils'
 import { NodeActionsMenu } from './NodeActionsMenu'
-
-// Helper component for parameter inputs
-const ParamInput = ({ 
-  id, 
-  label, 
-  value, 
-  handleId, 
-  onChange,
-  nodeId 
-}: { 
-  id: string, 
-  label: string, 
-  value: string | number, 
-  handleId: string, 
-  onChange: (val: string) => void,
-  nodeId: string
-}) => {
-  const connections = useHandleConnections({
-    type: 'target',
-    id: handleId,
-    nodeId: nodeId
-  });
-
-  const isConnected = connections.length > 0;
-
-  return (
-    <div className="flex items-center justify-between gap-2 relative">
-      <div className="relative pl-1">
-         <Label htmlFor={`${nodeId}-${id}`} className="text-[10px] text-zinc-400 font-mono uppercase">{label}</Label>
-      </div>
-      <Input 
-        id={`${nodeId}-${id}`}
-        type="text" 
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-6 w-16 text-[10px] px-1 text-right bg-zinc-950 border-zinc-800 focus:ring-red-500/20"
-        placeholder="0"
-      />
-    </div>
-  )
-}
 
 export const ExtractFrameNode = memo(({ id, data, selected }: NodeProps) => {
   const updateNodeData = useWorkflowStore((state) => state.updateNode)
@@ -82,7 +40,7 @@ export const ExtractFrameNode = memo(({ id, data, selected }: NodeProps) => {
   }, [id, updateNodeData])
 
   return (
-    <Card className={`w-64 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-red-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''}`}>
+    <Card className={`w-64 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-red-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-2">

@@ -19,7 +19,6 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [uppy] = useState(() => {
-    // Only initialize Uppy on client side
     if (typeof window === 'undefined') return null
 
     const uppyInstance = new Uppy({
@@ -31,7 +30,6 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
        }
     })
 
-    // Only add plugin if keys exist
     if (process.env.NEXT_PUBLIC_TRANSLOADIT_KEY && process.env.NEXT_PUBLIC_TRANSLOADIT_TEMPLATE_ID) {
         uppyInstance.use(Transloadit, {
             assemblyOptions: {
@@ -108,7 +106,6 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
       }
       reader.readAsDataURL(file)
       
-      // Still try Uppy if available (optional background upload)
       if (uppy) {
           try {
               uppy.addFile({
@@ -153,7 +150,7 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
   }
 
   return (
-    <Card className={`w-80 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-orange-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''}`}>
+    <Card className={`w-80 bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${selected ? 'ring-2 ring-orange-500' : ''} ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-2">

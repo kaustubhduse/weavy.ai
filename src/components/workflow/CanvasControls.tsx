@@ -22,7 +22,6 @@ export function CanvasControls() {
     onSuccess: (data) => {
       toast.success("Workflow started")
       setCurrentRunId(data.runId)
-      // Refresh history immediately so it appears in the list
       utils.history.getWorkflowRuns.invalidate({ workflowId })
     },
     onError: (err) => {
@@ -30,7 +29,6 @@ export function CanvasControls() {
     }
   })
 
-  // Polling for run details
   const { data: runDetails } = api.history.getRunDetails.useQuery(
     { runId: currentRunId! },
     { 
@@ -43,31 +41,42 @@ export function CanvasControls() {
     }
   )
 
-  // Sync results to nodes
+  // Sync results and execution status to nodes
   React.useEffect(() => {
     if (!runDetails) return
 
+    // Track which nodes are currently executing
+    const executingNodeIds = new Set(
+      runDetails.nodeRuns
+        .filter((run: any) => run.status === 'RUNNING')
+        .map((run: any) => run.nodeId)
+    )
+
     runDetails.nodeRuns.forEach((run: any) => {
          const output = run.output as any
+         const isExecuting = run.status === 'RUNNING'
+         const isCompleted = run.status === 'COMPLETED'
+         const isFailed = run.status === 'FAILED'
 
          if (output) {
-             // Heuristic to map specific outputs to node data fields
-             const updateData: any = {}
+             const updateData: any = { isExecuting }
              
              if (output.text) updateData.result = output.text
              if (output.output) updateData.output = output.output
              if (output.imageData) updateData.imageData = output.imageData
              if (output.videoUrl) updateData.videoUrl = output.videoUrl
              
-             // Also execute status visual (optional, maybe border color?)
-             
-             // Only update if changed to avoid loop (Zustand handles strict equality, but good to be careful)
-             // We just push the update.
              updateNode(run.nodeId, updateData)
+         } else if (isExecuting) {
+             // Node is running but no output yet
+             updateNode(run.nodeId, { isExecuting: true })
+         } else if (isCompleted || isFailed) {
+             // Clear executing state when done
+             updateNode(run.nodeId, { isExecuting: false })
          }
          
          if (run.error) {
-             updateNode(run.nodeId, { result: "Error: " + run.error, error: run.error })
+             updateNode(run.nodeId, { result: "Error: " + run.error, error: run.error, isExecuting: false })
          }
     })
 
