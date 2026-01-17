@@ -100,7 +100,7 @@ export const ExtractFrameNode = memo(({ id, data, selected }: NodeProps) => {
                         const currentUnit = String(data.timestamp || '').endsWith('%') ? '%' : 's';
                         handleParamChange('timestamp', currentUnit === '%' ? `${val}%` : val);
                     }}
-                    className="h-6 w-12 text-[10px] px-1 text-right bg-zinc-950 border-zinc-800 focus:ring-red-500/20"
+                    className="h-6 w-12 text-[10px] px-1 text-right bg-zinc-950 border-zinc-800 focus:ring-red-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="0"
                 />
                 <select

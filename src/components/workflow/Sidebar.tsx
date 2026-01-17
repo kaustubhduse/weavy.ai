@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Sparkles, Search, ArrowUpDown, Type, Image as ImageIcon, Video, Crop, Film, Save } from 'lucide-react'
+import { Sparkles, Search, ArrowUpDown, Type, Image as ImageIcon, Video, Crop, Film, Save, Download, Upload } from 'lucide-react'
+import { useWorkflowStore } from '@/lib/store/workflowStore'
 
 interface SidebarProps {
   activeTab: 'search' | 'quick-access' | null
@@ -18,6 +19,8 @@ type NodeType = 'text' | 'upload-image' | 'upload-video' | 'llm' | 'crop-image' 
 export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRename, onSave, isSaving }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [tempName, setTempName] = useState(workflowName)
+  const { nodes, edges, setNodes, setEdges } = useWorkflowStore()
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setTempName(workflowName)
@@ -45,6 +48,59 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType)
     event.dataTransfer.effectAllowed = 'move'
+  }
+
+  // Export workflow as JSON
+  const handleExport = () => {
+    const workflowData = {
+      name: workflowName,
+      nodes,
+      edges,
+      exportedAt: new Date().toISOString()
+    }
+    
+    const jsonString = JSON.stringify(workflowData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${workflowName.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Import workflow from JSON
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string
+        const workflowData = JSON.parse(content)
+        
+        if (workflowData.nodes && workflowData.edges) {
+          setNodes(workflowData.nodes)
+          setEdges(workflowData.edges)
+          if (workflowData.name && onRename) {
+            onRename(workflowData.name)
+          }
+        } else {
+          alert('Invalid workflow file format')
+        }
+      } catch (error) {
+        alert('Failed to import workflow. Please check the file format.')
+        console.error('Import error:', error)
+      }
+    }
+    reader.readAsText(file)
+    
+    // Reset input so same file can be imported again
+    event.target.value = ''
   }
 
   const isCollapsed = !activeTab
@@ -185,8 +241,38 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
             
           </div>
 
-          {/* Footer Save Button */}
-          <div className="p-4 border-t border-zinc-800">
+          {/* Footer Export/Import/Save Buttons */}
+          <div className="p-4 border-t border-zinc-800 space-y-2">
+             {/* Export/Import Row */}
+             <div className="grid grid-cols-2 gap-2">
+                <Button
+                   onClick={handleExport}
+                   variant="outline"
+                   className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border-zinc-700"
+                >
+                   <Download className="w-4 h-4 mr-2" />
+                   Export
+                </Button>
+                <Button
+                   onClick={() => fileInputRef.current?.click()}
+                   variant="outline"
+                   className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border-zinc-700"
+                >
+                   <Upload className="w-4 h-4 mr-2" />
+                   Import
+                </Button>
+             </div>
+             
+             {/* Hidden file input */}
+             <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                className="hidden"
+             />
+             
+             {/* Save Button */}
              <Button
                 onClick={onSave}
                 disabled={isSaving}

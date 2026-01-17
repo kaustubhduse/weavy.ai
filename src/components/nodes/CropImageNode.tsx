@@ -25,7 +25,7 @@ const ParamInput = ({ id, label, value, handleId, onChange, nodeId }: {
         type="number" 
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-6 w-16 text-[10px] px-1 text-right bg-zinc-950 border-zinc-800 focus:ring-teal-500/20"
+        className="h-6 w-16 text-[10px] px-1 text-right bg-zinc-950 border-zinc-800 focus:ring-teal-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         placeholder="0"
       />
     </div>
