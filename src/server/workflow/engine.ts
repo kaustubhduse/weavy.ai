@@ -49,6 +49,39 @@ export async function executeWorkflow(
     ctx: { db: PrismaClient }, 
     payload: { workflowId: string; nodes: Node[]; edges: Edge[]; runId: string }
 ) {
+    const WORKFLOW_TIMEOUT_MS = 200 * 1000; // 200 seconds
+    
+    const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+            reject(new Error('Workflow execution timeout: exceeded 200 seconds'));
+        }, WORKFLOW_TIMEOUT_MS);
+    });
+    
+    const executionPromise = executeWorkflowInternal(ctx, payload);
+    
+    try {
+        await Promise.race([executionPromise, timeoutPromise]);
+    } catch (error: any) {
+        // Handle timeout specifically
+        if (error.message.includes('timeout')) {
+            const { runId } = payload;
+            await ctx.db.workflowRun.update({
+                where: { id: runId },
+                data: { 
+                    status: 'FAILED',
+                    finishedAt: new Date(),
+                    duration: WORKFLOW_TIMEOUT_MS
+                }
+            });
+        }
+        throw error;
+    }
+}
+
+async function executeWorkflowInternal(
+    ctx: { db: PrismaClient }, 
+    payload: { workflowId: string; nodes: Node[]; edges: Edge[]; runId: string }
+) {
     const { workflowId, nodes, edges, runId } = payload;
     
     const run = await ctx.db.workflowRun.findUnique({ where: { id: runId } });
