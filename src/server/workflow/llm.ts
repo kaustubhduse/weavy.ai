@@ -20,7 +20,13 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
             parts.push({ text: `System Instruction: ${system}\n\n` });
         }
 
-        parts.push({ text: prompt });
+        // If images are provided, explicitly ask the LLM to analyze them first
+        if (images && images.length > 0) {
+            const enhancedPrompt = `I'm providing ${images.length} image(s) for you to analyze.\n\nFIRST: Carefully examine and describe what you see in each image.\nTHEN: ${prompt}\n\nRemember to reference the visual content from the images in your response.`;
+            parts.push({ text: enhancedPrompt });
+        } else {
+            parts.push({ text: prompt });
+        }
 
         if (images && images.length > 0) {
             for (const imgUrl of images) {
