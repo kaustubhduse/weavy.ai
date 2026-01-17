@@ -124,13 +124,15 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
          />
       </div>
 
-      {/* 2. EXPANDED STATE: Sidebar Drawer */}
+      {/* 2. EXPANDED STATE: Sidebar Drawer - Full width on mobile, fixed width on desktop */}
       <div 
         className={`bg-zinc-900 border-r border-zinc-800 flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-0 border-r-0 opacity-0' : 'w-60 opacity-100'
+          isCollapsed 
+            ? 'w-0 border-r-0 opacity-0 fixed md:relative' 
+            : 'w-full md:w-60 opacity-100 fixed md:relative z-40'
         }`}
       >
-        <div className="w-60 flex flex-col h-full"> {/* Inner container to fix width during transition */}
+        <div className="w-full md:w-60 flex flex-col h-full"> {/* Inner container */}
           
           {/* Header */}
           <div className="px-4 pt-[10%] pb-0">
@@ -161,7 +163,7 @@ export function Sidebar({ activeTab, workflowName = 'Untitled Workflow', onRenam
           </div>
           
           {/* Scrollable Content */}
-          <div className="p-4 flex-1 overflow-y-auto">
+          <div className="p-4 flex-1 overflow-y-hidden">
             <div className="mb-6">
               <h3 className={`text-md font-medium text-white mb-4 ${activeTab === 'quick-access' ? 'mt-4' : ''}`}>Quick access</h3>
               <div className="grid grid-cols-2 gap-3">

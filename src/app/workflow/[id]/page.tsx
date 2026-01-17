@@ -95,8 +95,10 @@ export default function WorkflowPage() {
 
   return (
     <div className="h-screen flex bg-zinc-950 text-white overflow-hidden">
-      {/* Left Navigation Rail */}
-      <LeftSide activeTab={activeSidebarTab} onTabChange={setActiveSidebarTab} />
+      {/* Left Navigation Rail - Hidden on mobile */}
+      <div className="hidden md:block">
+        <LeftSide activeTab={activeSidebarTab} onTabChange={setActiveSidebarTab} />
+      </div>
 
       <div className="flex-1 flex flex-col relative min-w-0">
         <div className="flex-1 flex overflow-hidden">
@@ -110,16 +112,16 @@ export default function WorkflowPage() {
           <div className="flex-1 relative">
             <Canvas />
             
-            {/* History Toggle Button */}
-            <div className="absolute top-4 right-4 z-10 flex gap-2">
+            {/* History Toggle Button - Responsive positioning */}
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 flex gap-2">
                <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                className={`bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white backdrop-blur-sm ${isHistoryOpen ? 'text-blue-400 border-blue-900/50 bg-blue-900/10' : ''}`}
+                className={`bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white backdrop-blur-sm text-xs md:text-sm ${isHistoryOpen ? 'text-blue-400 border-blue-900/50 bg-blue-900/10' : ''}`}
                >
-                 <History className="w-4 h-4 mr-2" />
-                 History
+                 <History className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                 <span className="hidden xs:inline">History</span>
                </Button>
             </div>
 
