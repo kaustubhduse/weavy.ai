@@ -7,36 +7,21 @@ import { type TextNodeData } from '@/lib/types'
 import { useState, useRef, useEffect } from 'react'
 import { useWorkflowStore } from '@/lib/store/workflowStore'
 import { NodeActionsMenu } from './NodeActionsMenu'
+import { useNodeLabel } from '@/hooks/use-node-label'
 
 export function TextNode({ id, data }: NodeProps<Node<any>>) {
   const nodeData = data as TextNodeData
   const [text, setText] = useState(nodeData.text || '')
-  const [isRenaming, setIsRenaming] = useState(false)
-  const [label, setLabel] = useState(nodeData.label || 'Prompt')
+  const { isRenaming, label, inputRef, handleLabelChange, handleLabelSubmit, handleKeyDown, startRenaming } = useNodeLabel(id, nodeData.label || 'Prompt')
   
   const updateNode = useWorkflowStore((state) => state.updateNode)
-  
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setText(value)
     updateNode(id, { text: value })
     adjustHeight()
-  }
-
-  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLabel(e.target.value)
-  }
-
-  const handleLabelSubmit = () => {
-    setIsRenaming(false)
-    updateNode(id, { label })
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleLabelSubmit()
   }
 
   const adjustHeight = () => {
@@ -49,12 +34,6 @@ export function TextNode({ id, data }: NodeProps<Node<any>>) {
   useEffect(() => {
     adjustHeight()
   }, [])
-
-  useEffect(() => {
-    if (isRenaming && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [isRenaming])
 
   return (
     <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
@@ -75,7 +54,7 @@ export function TextNode({ id, data }: NodeProps<Node<any>>) {
         <NodeActionsMenu 
             nodeId={id} 
             isLocked={nodeData.locked} 
-            onRename={() => setIsRenaming(true)} 
+            onRename={startRenaming} 
         />
       </div>
       <CardContent className="p-4 pt-2">

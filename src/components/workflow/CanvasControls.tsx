@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useWorkflowStore } from '@/lib/store/workflowStore'
 import { api } from '@/lib/trpc/client'
 import { useParams } from 'next/navigation'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 
 export function CanvasControls() {
   const { fitView, zoomIn, zoomOut } = useReactFlow()
@@ -15,17 +15,22 @@ export function CanvasControls() {
   const params = useParams()
   const workflowId = params.id as string
   const [currentRunId, setCurrentRunId] = React.useState<string | null>(null)
+  const { toast } = useToast()
 
   const utils = api.useUtils()
   
   const runWorkflow = api.execution.runWorkflow.useMutation({
     onSuccess: (data) => {
-      toast.success("Workflow started")
+      toast({ title: "Success", description: "Workflow started" })
       setCurrentRunId(data.runId)
       utils.history.getWorkflowRuns.invalidate({ workflowId })
     },
     onError: (err) => {
-        toast.error("Failed to start workflow: " + err.message)
+      toast({ 
+        title: "Error", 
+        description: "Failed to start workflow: " + err.message,
+        variant: "destructive"
+      })
     }
   })
 
@@ -81,8 +86,11 @@ export function CanvasControls() {
     })
 
     if (runDetails.status === 'COMPLETED' || runDetails.status === 'FAILED') {
-        if (runDetails.status === 'COMPLETED') toast.success("Workflow completed")
-        else toast.error("Workflow failed")
+        if (runDetails.status === 'COMPLETED') {
+          toast({ title: "Success", description: "Workflow completed" })
+        } else {
+          toast({ title: "Error", description: "Workflow failed", variant: "destructive" })
+        }
         setCurrentRunId(null) // Stop polling
         utils.history.getWorkflowRuns.invalidate({ workflowId }) // Refresh history panel
     }

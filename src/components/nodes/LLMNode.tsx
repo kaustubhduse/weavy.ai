@@ -12,21 +12,19 @@ import { Loader2, Play, AlertCircle } from 'lucide-react'
 import { api } from '@/lib/trpc/client'
 import { toast } from '@/hooks/use-toast'
 import { useParams } from 'next/navigation'
+import { useNodeLabel } from '@/hooks/use-node-label'
 
 export function LLMNode({ id, data }: NodeProps<Node<any>>) {
   const nodeData = data as LLMNodeData
   const [result, setResult] = useState(nodeData.result || '')
   const [isExecuting, setIsExecuting] = useState(false)
-  
-  const [isRenaming, setIsRenaming] = useState(false)
-  const [label, setLabel] = useState(nodeData.label || 'LLM')
+  const { isRenaming, label, inputRef, handleLabelChange, handleLabelSubmit, handleKeyDown, startRenaming} = useNodeLabel(id, nodeData.label || 'LLM')
   
   const updateNode = useWorkflowStore((state) => state.updateNode)
   const { nodes, edges } = useWorkflowStore()
   const params = useParams()
   
   const executeMutation = api.execution.executeLLMNode.useMutation()
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleExecute = async () => {
     setIsExecuting(true)
@@ -108,29 +106,10 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
     }
   }
 
-  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLabel(e.target.value)
-  }
-
-  const handleLabelSubmit = () => {
-    setIsRenaming(false)
-    updateNode(id, { label })
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleLabelSubmit()
-  }
-  
   // Re-sync result if data changes externally
   useEffect(() => {
     if (nodeData.result !== undefined) setResult(nodeData.result)
   }, [nodeData.result])
-  
-  useEffect(() => {
-    if (isRenaming && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [isRenaming])
 
   return (
     <Card className={`min-w-[350px] max-w-[400px] bg-[#2B2B2F] border-zinc-800 shadow-xl rounded-2xl overflow-visible ${nodeData.locked ? 'nodrag border-red-900/50' : ''} ${nodeData.isExecuting ? 'node-executing' : ''}`}>
@@ -167,7 +146,7 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
             <NodeActionsMenu 
                 nodeId={id} 
                 isLocked={nodeData.locked} 
-                onRename={() => setIsRenaming(true)} 
+                onRename={startRenaming} 
             />
         </div>
       </div>
