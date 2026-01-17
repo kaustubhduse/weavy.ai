@@ -7,8 +7,20 @@ import os from "os";
 // Configure FFmpeg to use static binary (works on Vercel)
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-// Helper to download file to temp path
+// Helper to download file or decode base64 to temp path
 async function downloadFile(url: string, outputPath: string) {
+  // Handle base64 data URLs (e.g., from Upload or Crop nodes)
+  if (url.startsWith('data:')) {
+    const match = url.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) throw new Error('Invalid base64 data URL format');
+    
+    const base64Data = match[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+    fs.writeFileSync(outputPath, buffer);
+    return;
+  }
+  
+  // Handle regular URLs
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to download file: ${response.statusText}`);
   const buffer = await response.arrayBuffer();
