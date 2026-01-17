@@ -1,7 +1,11 @@
 import ffmpeg from "fluent-ffmpeg";
+import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import fs from "fs";
 import path from "path";
 import os from "os";
+
+// Configure FFmpeg to use static binary (works on Vercel)
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 // Helper to download file to temp path
 async function downloadFile(url: string, outputPath: string) {
