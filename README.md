@@ -1,372 +1,321 @@
-# Weavy.ai Clone - LLM Workflow Builder
+# Weavy - Visual Workflow Builder
 
-A pixel-perfect clone of Weavy.ai's workflow builder interface, focusing on LLM workflows with Google Gemini integration. Build powerful visual workflows for multimodal content generation.
+A powerful visual workflow automation platform for building AI-powered workflows with drag-and-drop nodes. Create complex data pipelines combining LLMs, image/video processing, and custom logic.
 
-## 🚀 Features
+## ✨ Features
 
-- **Visual Workflow Builder**: Drag-and-drop canvas with React Flow
-- **3 Node Types**:
-  - **Text Node**: Editable text input for prompts and messages
-  - **Image Node**: Upload and preview images  
-  - **Run Any LLM Node**: Execute Google Gemini with multimodal support (text + images)
-- **Type-Safe Connections**: Text connects to text, images to images
-- **DAG Validation**: Prevents circular dependencies
-- **Undo/Redo**: Full history tracking
-- **Persistence**: Save and load workflows from PostgreSQL
-- **Pre-built Sample**: "Product Marketing Workflow" demonstrating end-to-end multimodal capabilities
+### Visual Workflow Engine
+- **Drag-and-Drop Canvas** - Intuitive node-based interface powered by React Flow
+- **6 Node Types**:
+  - **Text Node** - Editable prompts and text inputs
+  - **Upload Image** - Image upload with base64 encoding
+  - **Upload Video** - Video upload with optional Transloadit processing
+  - **Run Any LLM** - Execute Google Gemini AI with multimodal support
+  - **Crop Image** - Precise image cropping with x/y/width/height controls
+  - **Extract Frame** - Extract specific video frames using FFmpeg
+
+### Workflow Execution
+- **Real-time Execution** - Watch nodes execute with pulsating yellow glow animation
+- **Animated Edges** - Flowing connections show data flow direction
+- **Execution History** - Track all workflow runs with status and timing
+- **Error Handling** - Graceful failure handling with detailed error messages
+
+### Collaboration & Organization
+- **Folder System** - Organize workflows in nested folders
+- **User Authentication** - Secure auth powered by Clerk
+- **Workflow Sharing** - Copy workflow links to clipboard
+- **Auto-save** - Changes persisted immediately to PostgreSQL
+
+### Developer Experience
+- **Type-Safe API** -tRPC with full TypeScript inference
+- **Toast Notifications** - Consistent feedback using custom toast hook
+- **Undo/Redo** - Full history tracking
+- **Node Locking** - Prevent accidental edits to critical nodes
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-| --- | --- |
-| **Framework** | Next.js 16 (App Router) |
-| **Language** | TypeScript (strict mode) |
-| **Database** | PostgreSQL + Prisma |
-| **Auth** | Clerk |
-| **API** | tRPC |
-| **Data Fetching** | TanStack Query |
-| **Canvas** | React Flow (@xyflow/react) |
-| **State** | Zustand |
-| **Validation** | Zod |
-| **UI** | Shadcn/ui + Tailwind CSS |
-| **LLM** | Google Gemini API |
+### Core Stack (Required)
 
-## ⚡ Quick Start & Setup
+| Technology | Purpose |
+|------------|---------|
+| **Next.js+** | React framework with App Router |
+| **TypeScript** | Type safety throughout the codebase |
+| **PostgreSQL** | Database (use Supabase, Neon, or similar) |
+| **Prisma** | ORM for database access |
+| **Clerk** | Authentication |
+
+### Libraries & Tools
+
+| Technology | Purpose |
+|------------|---------|
+| **React Flow** | Visual workflow/node graph library |
+| **Trigger.dev** | ALL node execution MUST use Trigger.dev |
+| **Transloadit** | File uploads and media processing |
+| **FFmpeg** | Image/video processing (via Trigger.dev) |
+| **Tailwind CSS** | Styling (match Weavy's theme exactly) |
+| **Zustand** | State management |
+| **Zod** | Schema validation |
+| **Google Generative AI SDK** | `@google/generative-ai` package |
+| **Lucide React** | Icon library |
+
+### Additional Stack Details
+
+## ⚡ Quick Start
 
 ### Prerequisites
+- Node.js 20+
+- PostgreSQL database
+- Clerk account ([clerk.com](https://clerk.com))
+- Google Gemini API key ([aistudio.google.com](https://aistudio.google.com/app/apikey))
 
-- **Node.js 20+** and npm
-- **PostgreSQL database** (local or cloud)
-- **Clerk account** - [Sign up for free](https://clerk.com)
-- **Google Gemini API key** - [Get free key](https://aistudio.google.com/app/apikey)
-
----
-
-### 🔧 Step 1: Install Dependencies
-
-The project is already initialized with all dependencies in `package.json`. Simply run:
+### Installation
 
 ```bash
-# Navigate to project directory
-cd c:\Users\Kaustubh Duse\OneDrive\Desktop\weavy\weavy
-
-# Install all dependencies (514 packages)
+# Clone & install
 npm install
-```
 
-**Expected output:** `added 514 packages` with no vulnerabilities
-
----
-
-### 🔑 Step 2: Set Up Environment Variables
-
-Create a `.env.local` file in the **project root directory**:
-
-**Option A: Using PowerShell**
-```powershell
-# Create the file
-New-Item -Path ".env.local" -ItemType File -Force
-```
-
-**Option B: Manual creation**
-- Right-click in the project folder → New → Text Document
-- Name it `.env.local` (remove `.txt` extension)
-
-Then add your API keys to `.env.local`:
-
-```env
-# Database - Replace with your PostgreSQL connection string
-DATABASE_URL="postgresql://user:password@localhost:5432/weavy"
-
-# Clerk Authentication - Get from https://dashboard.clerk.com
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-CLERK_SECRET_KEY="sk_test_..."
-
-# Google Gemini - Get from https://aistudio.google.com/app/apikey
-GOOGLE_GEMINI_API_KEY="AIza..."
-
-# App URL (keep as-is for local development)
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
-
-#### 🔗 Where to Get API Keys:
-
-1. **PostgreSQL Database:**
-   - **Local:** Install PostgreSQL locally
-   - **Cloud (Free):** [Neon.tech](https://neon.tech) or [Supabase](https://supabase.com)
-   - Connection string format: `postgresql://username:password@host:5432/database_name`
-
-2. **Clerk (Free tier available):**
-   - Go to [clerk.com](https://clerk.com) → Sign up
-   - Create a new application
-   - Go to **API Keys** → Copy both keys
-
-3. **Google Gemini API (Free tier: 15 requests/min):**
-   - Visit [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-   - Click **"Get API Key"** → Create new key
-   - Copy the `AIza...` key
-
----
-
-### 💾 Step 3: Initialize Database
-
-Run these commands **in order**:
-
-```bash
-# 1. Generate Prisma client (creates type-safe database client)
+# Generate Prisma client
 npm run prisma:generate
 
-# 2. Push schema to database (creates tables)
+# Push database schema
 npm run prisma:push
 
-# 3. Seed sample data (optional - creates "Product Marketing" workflow)
+# Seed sample data (optional)
 npm run prisma:seed
 ```
 
-**Expected output for seed:**
-```
-Created workflow: clxxxxxx
-Sample workflow created successfully!
+### Environment Variables
+
+Create `.env` or `.env.local` in the project root:
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/weavy"
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+
+# Google Gemini AI  
+GOOGLE_GEMINI_API_KEY="AIza..."
+
+# Transloadit (Optional - for cloud video processing)
+NEXT_PUBLIC_TRANSLOADIT_KEY="your_key"
+NEXT_PUBLIC_TRANSLOADIT_TEMPLATE_ID="your_template"
+
+# App URL
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
----
-
-### 🚀 Step 4: Run the Application
+### Run Development Server
 
 ```bash
-# Start development server
 npm run dev
 ```
 
-**Expected output:**
-```
-▲ Next.js 16.1.1
-- Local:        http://localhost:3000
-- Environments: .env.local
+Open [http://localhost:3000](http://localhost:3000)
 
-✓ Ready in 2.5s
-```
+## 🎯 How It Works
 
-**Open your browser** and navigate to:
-```
-http://localhost:3000
-```
+### 1. **Create a Workflow**
+- Log in with Clerk authentication
+- Create a new workflow or open existing one
+- Access the visual canvas editor
 
----
+### 2. **Build Your Pipeline**
+- **Drag nodes** from the left sidebar onto the canvas
+- **Connect nodes** by dragging from output handles (right) to input handles (left)
+- **Configure nodes** by clicking and editing their properties
+- **Valid connections**:
+  - Text → Text (prompts, messages)
+  - Image → Image (visual data)
+  - Video → Video or Image (frame extraction)
 
-### 🎯 Step 5: First-Time Usage
+### 3. **Execute Workflows**
+- Click **Run** button in the top controls
+- Nodes execute in topological order (dependencies first)
+- Watch execution with:
+  - **Yellow pulsating glow** on active nodes
+  - **Status updates** in real-time
+  - **Results** displayed inline on nodes
 
-1. **Sign Up/Sign In:**
-   - Click "Sign Up" (powered by Clerk)
-   - Use email or Google/GitHub sign-in
-   
-2. **Access Sample Workflow:**
-   - You'll see the "Product Marketing Workflow" card
-   - Click to open the visual editor
+### 4. **View Execution History**
+- Open History panel (clock icon, left sidebar)
+- See all past runs with status (COMPLETED/FAILED)
+- Click any run to view detailed node execution logs
+- Check execution times and error messages
 
-3. **Test the Workflow:**
-   - Upload images to the 3 Image Nodes
-   - Edit text in the Text Nodes
-   - Click **"Execute"** on the "Analyze Product" LLM node
-   - View results appearing inline on the node
+## 📊 Database Schema
 
-4. **Create Your Own Workflow:**
-   - Click **"+ Create New Workflow"**
-   - Drag nodes from the left sidebar
-   - Connect nodes by dragging from output to input handles
-   - Click **"Save"** to persist to database
-
----
-
-### 🛠 Development Commands
-
-```bash
-# Start development server with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server (after build)
-npm run start
-
-# Run ESLint
-npm run lint
-
-# Database commands
-npm run prisma:generate  # Regenerate Prisma client after schema changes
-npm run prisma:push      # Push schema changes to database
-npm run prisma:seed      # Re-seed sample data
-```
-
----
-
-### ⚠️ Troubleshooting
-
-**Issue: "Module not found: Can't resolve '@prisma/client'"**
-```bash
-npm run prisma:generate
-```
-
-**Issue: "Invalid `prisma.workflow.create()` invocation"**
-- Check your `DATABASE_URL` in `.env.local`
-- Ensure PostgreSQL is running
-- Run `npm run prisma:push` again
-
-**Issue: "Clerk is not configured"**
-- Verify both Clerk keys are in `.env.local`
-- Ensure keys start with `pk_test_` and `sk_test_`
-- Restart the dev server after adding keys
-
-**Issue: "Gemini API error"**
-- Verify your API key starts with `AIza`
-- Check quota at [aistudio.google.com](https://aistudio.google.com)
-- Free tier allows 15 requests/minute
-
-**Issue: Port 3000 already in use**
-```bash
-# Kill the process or use a different port
-$env:PORT=3001; npm run dev
-```
-
----
-
-## 📋 Sample Workflow
-
-The seed includes a pre-built "Product Marketing Workflow":
-
-```
-[Image: Product Photo 1] ──┐
-[Image: Product Photo 2] ──┼──> [LLM: Analyze Product] ──┬──> [LLM: Amazon Listing] ──> [Result]
-[Image: Product Photo 3] ──┘            ↑                 ├──> [LLM: Instagram Caption] ──> [Result]
-                                        │                 └──> [LLM: SEO Description] ──> [Result]
-[Text: System Prompt] ──────────────────┤
-[Text: Product Details] ─────────────────┘
-```
-
-**To use:**
-1. Upload 3 product images to the Image Nodes
-2. Click "Execute" on the "Analyze Product" LLM node
-3. Results appear inline on the node
-4. Execute downstream nodes to generate marketing copy
-
-## 🎨 Architecture
-
-### State Management (Zustand)
-- Nodes and edges stored in global state
-- Real-time validation on connections
-- Cycle detection using DFS algorithm
-- History stack for undo/redo
-
-### API Layer (tRPC)
-- **Workflow Router**: CRUD operations with ownership verification
-- **Execution Router**: LLM processing with Gemini API
-- Type-safe end-to-end with Zod schemas
-
-### Database (Prisma)
 ```prisma
-model Workflow {
-  id      String @id
-  name    String
-  userId  String
-  nodes   Node[]
-  edges   Edge[]
-}
-
-model Node {
-  id    String @id
-  type  String  // 'text' | 'image' | 'llm'
-  data  Json    // Node-specific configuration
-}
-
-model Edge {
-  id           String @id
-  source       String
-  target       String
-  sourceHandle String?
-  targetHandle String?
-}
+Folder         # Organize workflows
+  ├─ Workflow  # Contains nodes & edges
+      ├─ Node  # Individual workflow steps
+      ├─ Edge  # Connections between nodes
+      └─ WorkflowRun  # Execution history
+          └─ NodeRun  # Individual node execution logs
 ```
 
-## 🔑 Key Implementation Details
+### Key Models
 
-### Connection Validation
-```typescript
-const connectionRules = {
-  text: ['text'],   // Text only connects to text
-  image: ['image'], // Images only connect to images
-}
+**Workflow**: Stores workflow metadata, nodes (JSON), edges (JSON), viewport state
 
-// Cycle detection prevents infinite loops
-function checkForCycles(source: string, target: string): boolean {
-  // DFS to detect cycles in DAG
-}
-```
+**WorkflowRun**: Tracks execution with status, timestamps, duration
 
-### LLM Node Execution
-- **3 Input Handles**:
-  1. `system_prompt` (text, optional)
-  2. `user_message` (text, required)
-  3. `images` (image, optional, multiple)
-- **1 Output Handle**: `output` (text)
-- Results displayed inline on the node
-- Supports multimodal requests (text + images)
+**NodeRun**: Logs individual node execution with inputs, outputs, errors
 
-## 📁 Project Structure
+## 🎨 Node Types Deep Dive
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/trpc/          # tRPC API routes
-│   ├── workflow/[id]/     # Workflow editor page
-│   └── page.tsx           # Dashboard/landing
-├── components/
-│   ├── nodes/             # Custom React Flow nodes
-│   │   ├── TextNode.tsx
-│   │   ├── ImageNode.tsx
-│   │   └── LLMNode.tsx
-│   ├── workflow/          # Workflow UI components
-│   │   ├── Sidebar.tsx
-│   │   ├── Canvas.tsx
-│   │   └── Toolbar.tsx
-│   └── ui/                # Shadcn components
-├── lib/
-│   ├── store/             # Zustand state management
-│   ├── trpc/              # tRPC client setup
-│   └── types.ts           # TypeScript definitions
-└── server/
-    ├── api/               # tRPC routers
-    ├── db.ts              # Prisma client
-    └── gemini.ts          # Gemini API client
-```
+### Text Node
+- **Purpose**: Provide text input for prompts or messages
+- **Outputs**: Plain text string
+- **Use Cases**: System prompts, user messages, static text
 
-## 🚧 Development Commands
+### Upload Image Node
+- **Purpose**: Upload and encode images
+- **Outputs**: Base64 data URL
+- **Features**: File upload, URL input, image gallery preview
+- **Supported Formats**: JPEG, PNG, GIF, WebP
+
+### Upload Video Node
+- **Purpose**: Upload videos for processing
+- **Outputs**: Base64 data URL or Transloadit URL
+- **Features**: Optional cloud processing, file size display
+- **Supported Formats**: MP4, WebM, MOV
+
+### Run Any LLM Node
+- **Purpose**: Execute Google Gemini AI
+- **Inputs**:
+  - System Prompt (optional)
+  - User Message (required)
+  - Images (optional, multiple)
+- **Outputs**: Generated text
+- **Models**: Gemini 2.0 Flash Lite (default), 2.5 Flash, 2.0 Flash (fallbacks)
+- **Features**: Multimodal support, model fallback, inline results
+
+### Crop Image Node
+- **Purpose**: Crop images to specific dimensions
+- **Inputs**: Image data URL
+- **Parameters**: X, Y, Width, Height (pixels)
+- **Outputs**: Cropped image as base64
+
+### Extract Frame Node
+- **Purpose**: Extract single frame from video
+- **Inputs**: Video data URL
+- **Parameters**: Timestamp (seconds/milliseconds)
+- **Outputs**: Frame as base64 PNG
+- **Technology**: FFmpeg (serverless-compatible binary)
+
+## 🚀 Development Commands
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
+# Development
+npm run dev          # Start dev server with hot reload
+npm run build        # Production build
 npm run start        # Start production server
 npm run lint         # Run ESLint
 
 # Database
-npm run prisma:generate  # Generate Prisma client
-npm run prisma:push      # Push schema to database
-npm run prisma:seed      # Seed sample data
+npm run prisma:generate  # Regenerate Prisma client
+npm run prisma:push      # Push schema changes to DB
+npm run prisma:seed      # Seed sample workflows
 ```
 
-## 🔒 Security
+## 🎯 API Routes (tRPC)
 
-- Environment variables never committed (`.env.local` in `.gitignore`)
-- Clerk handles authentication
-- tRPC protectedProcedure ensures user ownership
-- Zod validates all API inputs
+### Workflows
+- `workflow.list` - Get user's workflows
+- `workflow.get` - Get workflow by ID
+- `workflow.create` - Create new workflow
+- `workflow.update` - Update workflow (nodes, edges, viewport)
+- `workflow.delete` - Delete workflow
+- `workflow.duplicate` - Clone workflow
+
+### Folders
+- `folder.list` - Get folder tree
+- `folder.create` - Create folder
+- `folder.update` - Rename folder
+- `folder.delete` - Delete folder (cascade)
+
+### Execution
+- `execution.runWorkflow` - Execute entire workflow
+- `execution.executeLLMNode` - Execute single LLM node
+
+### History
+- `history.getWorkflowRuns` - Get execution history
+- `history.getRunDetails` - Get detailed run logs
+
+## 🔐 Security
+
+- **Authentication**: Clerk middleware protects all routes
+- **Authorization**: User ID verified on all API calls
+- **Data Isolation**: Users can only access their own workflows
+- **Input Validation**: Zod schemas validate all API inputs
+- **SQL Injection**: Prevented by Prisma's parameterized queries
+
+## 🎨 UI Components
+
+### Custom Hooks
+- `useNodeLabel` - Shared label editing logic across all nodes
+- `useToast` - Consistent toast notifications
+
+### Visual Features
+- **Node Execution Glow**: Yellow pulsating animation (2s cycle)
+- **Animated Edges**: Flowing dashed lines (indigo blue, #6366f1)
+- **Dot Grid Background**: Subtle grid for canvas alignment
+- **Dark Mode**: Professional dark theme throughout
+
+## 📦 Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `@xyflow/react` | Visual workflow canvas |
+| `@clerk/nextjs` | Authentication |
+| `@trpc/server` | Type-safe API |
+| `@prisma/client` | Database ORM |
+| `@google/generative-ai` | Gemini AI SDK |
+| `fluent-ffmpeg` | Video processing |
+| `@uppy/core` | File uploads |
+| `zustand` | State management |
+| `zod` | Schema validation |
+| `sonner` | Toast notifications |
+
+## 🐛 Troubleshooting
+
+**"Prisma Client not found"**
+```bash
+npm run prisma:generate
+```
+
+**"Database connection failed"**
+- Verify `DATABASE_URL` in `.env`
+- Ensure PostgreSQL is running
+- Test connection: `npx prisma db pull`
+
+**"Clerk is not configured"**
+- Add Clerk keys to `.env`
+- Restart dev server
+- Clear browser cookies
+
+**"FFmpeg not found"**
+- FFmpeg is bundled via `@ffmpeg-installer/ffmpeg`
+- On Vercel, ensure webpack config includes binary
+- Check `next.config.ts` for externals/copy plugins
+
+**"Workflow execution timeout"**
+- Workflows auto-fail after 200 seconds
+- Check node execution logs in History panel
+- Simplify workflow or optimize node processing
 
 ## 📝 License
 
-This project is for educational purposes as a Weavy.ai clone demonstration.
+This project is for educational and portfolio purposes.
 
-## 🙏 Acknowledgments
+## 🙏 Credits
 
-- [Weavy.ai](https://weavy.ai) for the design inspiration
-- [React Flow](https://reactflow.dev) for the canvas library
-- [Google Gemini](https://ai.google.dev) for the LLM API
+Built with ❤️ using modern web technologies
+
+- [React Flow](https://reactflow.dev) - Visual workflow engine
+- [Clerk](https://clerk.com) - Authentication
+- [Google Gemini](https://ai.google.dev) - AI capabilities
+- [Shadcn/ui](https://ui.shadcn.com) - UI components
