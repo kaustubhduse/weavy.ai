@@ -12,233 +12,214 @@ async function main() {
   console.log('✅ Cleanup complete!')
   console.log('🌱 Seeding database...')
   
-  const userId = 'user_demo'
+  const userId = 'sample_user'
   
+  // Create the comprehensive marketing workflow
   const workflow = await prisma.workflow.create({
     data: {
-      name: 'Product Marketing Workflow',
-      description: 'Analyze product images and generate marketing content',
-      userId: 'sample_user',
+      name: 'Workflow-1',
+      description: 'Professional marketing content generator with image and video processing',
+      userId: userId,
       viewport: { x: 0, y: 0, zoom: 1 },
     },
   })
 
   console.log('Created workflow:', workflow.id)
 
+  // Define all nodes with proper data structure
   const nodes = [
     {
-      id: 'image-1',
-      workflowId: workflow.id,
-      type: 'image',
-      position: { x: 100, y: 100 },
-      data: { label: 'Product Photo 1' },
-    },
-    {
-      id: 'image-2',
-      workflowId: workflow.id,
-      type: 'image',
-      position: { x: 100, y: 250 },
-      data: { label: 'Product Photo 2' },
-    },
-    {
-      id: 'image-3',
-      workflowId: workflow.id,
-      type: 'image',
-      position: { x: 100, y: 400 },
-      data: { label: 'Product Photo 3' },
-    },
-    {
-      id: 'text-1',
+      id: 'text-1768645040538',
       workflowId: workflow.id,
       type: 'text',
-      position: { x: 100, y: 550 },
+      position: { x: 176, y: 35 },
       data: {
-        label: 'System Prompt',
-        text: 'You are an expert product analyst and copywriter.',
+        text: 'You are a professional marketing copywriter. Generate a compelling one-paragraph product descripton',
+        label: 'Text Node-1',
       },
     },
     {
-      id: 'text-2',
+      id: 'text-1768645043539',
       workflowId: workflow.id,
       type: 'text',
-      position: { x: 100, y: 700 },
+      position: { x: 175.7997827403863, y: 242.3998913701931 },
       data: {
-        label: 'Product Details',
-        text: 'Analyze these product images and extract key features, colors, materials, and unique selling points',
+        text: 'Product: Wireless Bluetooth Headphones.\nFeatures: Noise cancellation, 30-hour battery, foldable design.',
+        label: 'Text Node-2',
       },
     },
     {
-      id: 'llm-1',
+      id: 'upload-image-1768645111874',
+      workflowId: workflow.id,
+      type: 'upload-image',
+      position: { x: 177.3928217798758, y: 473.1866212280131 },
+      data: {
+        label: 'Upload Image',
+        fileName: 'headphones.jpg',
+        imageData: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
+      },
+    },
+    {
+      id: 'crop-image-1768645150506',
+      workflowId: workflow.id,
+      type: 'crop-image',
+      position: { x: 747.4383886255923, y: 495.8530805687204 },
+      data: {
+        x: 0,
+        y: 0,
+        label: 'Crop Image',
+        width: 80,
+        height: 80,
+      },
+    },
+    {
+      id: 'llm-1768645295861',
       workflowId: workflow.id,
       type: 'llm',
-      position: { x: 500, y: 300 },
+      position: { x: 1104.803676115288, y: 117.5341616689827 },
       data: {
-        label: 'Analyze Product',
-        model: 'gemini-1.5-flash',
+        label: 'Run Any LLM',
+        model: 'gemini-2.0-flash-lite',
         temperature: 0.7,
       },
     },
     {
-      id: 'llm-2',
+      id: 'upload-video-1768645325887',
       workflowId: workflow.id,
-      type: 'llm',
-      position: { x: 900, y: 100 },
+      type: 'upload-video',
+      position: { x: 172.6995765590615, y: 978.3490772843758 },
       data: {
-        label: 'Write Amazon Listing',
-        model: 'gemini-1.5-flash',
-        temperature: 0.8,
+        label: 'Upload Video',
+        fileName: 'videoplayback.mp4',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       },
     },
     {
-      id: 'llm-3',
+      id: 'extract-frame-1768645331048',
       workflowId: workflow.id,
-      type: 'llm',
-      position: { x: 900, y: 350 },
+      type: 'extract-frame',
+      position: { x: 739.9668216993994, y: 1033.692223151726 },
       data: {
-        label: 'Write Instagram Caption',
-        model: 'gemini-1.5-flash',
-        temperature: 0.9,
+        label: 'Extract Frame',
+        timestamp: '4',
       },
     },
     {
-      id: 'llm-4',
+      id: 'llm-1768645529195',
       workflowId: workflow.id,
       type: 'llm',
-      position: { x: 900, y: 600 },
+      position: { x: 1885.58516003774, y: 477.7707235738891 },
       data: {
-        label: 'Write SEO Meta Description',
-        model: 'gemini-1.5-flash',
+        label: 'Run Any LLM',
+        model: 'gemini-2.0-flash-lite',
         temperature: 0.7,
       },
     },
     {
-      id: 'text-3',
+      id: 'text-1768645541249',
       workflowId: workflow.id,
       type: 'text',
-      position: { x:900, y: 900 },
+      position: { x: 1481.142368298401, y: 74.67453864218783 },
       data: {
-        label: 'Amazon Listing Prompt',
-        text: 'Based on the analysis, write a compelling Amazon product listing with title, bullet points, and description.',
-      },
-    },
-    {
-      id: 'text-4',
-      workflowId: workflow.id,
-      type: 'text',
-      position: { x: 950, y: 950 },
-      data: {
-        label: 'Instagram Prompt',
-        text: 'Create an engaging Instagram caption with emojis and hashtags.',
-      },
-    },
-    {
-      id: 'text-5',
-      workflowId: workflow.id,
-      type: 'text',
-      position: { x: 1000, y: 1000 },
-      data: {
-        label: 'SEO Prompt',
-        text: 'Write an SEO-optimized meta description (max 160 characters).',
+        text: 'You are a asocial media manager. Create a tweet-length marketing post based on the product image and video frame.',
+        label: 'Text-Node-3',
       },
     },
   ]
 
   await prisma.node.createMany({ data: nodes })
 
+  // Define all edges with proper connections
   const edges = [
     {
-      id: 'edge-1',
+      id: 'xy-edge__upload-image-1768645111874image-output-crop-image-1768645150506image-url-input',
       workflowId: workflow.id,
-      source: 'image-1',
-      target: 'llm-1',
+      source: 'upload-image-1768645111874',
+      target: 'crop-image-1768645150506',
+      sourceHandle: 'image-output',
+      targetHandle: 'image-url-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__text-1768645040538prompt-output-llm-1768645295861system_prompt-input',
+      workflowId: workflow.id,
+      source: 'text-1768645040538',
+      target: 'llm-1768645295861',
+      sourceHandle: 'prompt-output',
+      targetHandle: 'system_prompt-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__text-1768645043539prompt-output-llm-1768645295861user_message-input',
+      workflowId: workflow.id,
+      source: 'text-1768645043539',
+      target: 'llm-1768645295861',
+      sourceHandle: 'prompt-output',
+      targetHandle: 'user_message-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__crop-image-1768645150506image-output-llm-1768645295861images-input',
+      workflowId: workflow.id,
+      source: 'crop-image-1768645150506',
+      target: 'llm-1768645295861',
       sourceHandle: 'image-output',
       targetHandle: 'images-input',
+      type: 'default',
     },
     {
-      id: 'edge-2',
+      id: 'xy-edge__upload-video-1768645325887video-output-extract-frame-1768645331048video-url-input',
       workflowId: workflow.id,
-      source: 'image-2',
-      target: 'llm-1',
+      source: 'upload-video-1768645325887',
+      target: 'extract-frame-1768645331048',
+      sourceHandle: 'video-output',
+      targetHandle: 'video-url-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__text-1768645541249prompt-output-llm-1768645529195system_prompt-input',
+      workflowId: workflow.id,
+      source: 'text-1768645541249',
+      target: 'llm-1768645529195',
+      sourceHandle: 'prompt-output',
+      targetHandle: 'system_prompt-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__llm-1768645295861text-output-llm-1768645529195user_message-input',
+      workflowId: workflow.id,
+      source: 'llm-1768645295861',
+      target: 'llm-1768645529195',
+      sourceHandle: 'text-output',
+      targetHandle: 'user_message-input',
+      type: 'default',
+    },
+    {
+      id: 'xy-edge__extract-frame-1768645331048image-output-llm-1768645529195images-input',
+      workflowId: workflow.id,
+      source: 'extract-frame-1768645331048',
+      target: 'llm-1768645529195',
       sourceHandle: 'image-output',
       targetHandle: 'images-input',
+      type: 'default',
     },
     {
-      id: 'edge-3',
+      id: 'xy-edge__crop-image-1768645150506image-output-llm-1768645529195images-input',
       workflowId: workflow.id,
-      source: 'image-3',
-      target: 'llm-1',
+      source: 'crop-image-1768645150506',
+      target: 'llm-1768645529195',
       sourceHandle: 'image-output',
       targetHandle: 'images-input',
-    },
-    {
-      id: 'edge-4',
-      workflowId: workflow.id,
-      source: 'text-1',
-      target: 'llm-1',
-      sourceHandle: 'text-output',
-      targetHandle: 'system_prompt-input',
-    },
-    {
-      id: 'edge-5',
-      workflowId: workflow.id,
-      source: 'text-2',
-      target: 'llm-1',
-      sourceHandle: 'text-output',
-      targetHandle: 'user_message-input',
-    },
-    {
-      id: 'edge-6',
-      workflowId: workflow.id,
-      source: 'llm-1',
-      target: 'llm-2',
-      sourceHandle: 'text-output',
-      targetHandle: 'user_message-input',
-    },
-    {
-      id: 'edge-7',
-      workflowId: workflow.id,
-      source: 'llm-1',
-      target: 'llm-3',
-      sourceHandle: 'text-output',
-      targetHandle: 'user_message-input',
-    },
-    {
-      id: 'edge-8',
-      workflowId: workflow.id,
-      source: 'llm-1',
-      target: 'llm-4',
-      sourceHandle: 'text-output',
-      targetHandle: 'user_message-input',
-    },
-    {
-      id: 'edge-9',
-      workflowId: workflow.id,
-      source: 'text-3',
-      target: 'llm-2',
-      sourceHandle: 'text-output',
-      targetHandle: 'system_prompt-input',
-    },
-    {
-      id: 'edge-10',
-      workflowId: workflow.id,
-      source: 'text-4',
-      target: 'llm-3',
-      sourceHandle: 'text-output',
-      targetHandle: 'system_prompt-input',
-    },
-    {
-      id: 'edge-11',
-      workflowId: workflow.id,
-      source: 'text-5',
-      target: 'llm-4',
-      sourceHandle: 'text-output',
-      targetHandle: 'system_prompt-input',
+      type: 'default',
     },
   ]
 
   await prisma.edge.createMany({ data: edges })
 
-  console.log('Sample workflow created successfully!')
+  console.log('✅ Sample workflow created successfully!')
+  console.log(`   - Workflow: ${workflow.name}`)
+  console.log(`   - Nodes: ${nodes.length}`)
+  console.log(`   - Edges: ${edges.length}`)
 }
 
 main()
