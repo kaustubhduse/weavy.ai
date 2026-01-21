@@ -63,20 +63,20 @@ export async function runLLM(payload: { prompt: string; system?: string; images?
 
     try {
         const output = await executeWithModel("gemini-2.0-flash-lite");
-        return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
+        return { text: output };
     } 
     catch (error: any) {
         console.warn("Primary model (gemini-2.0-flash-lite) failed, attempting fallback...", error.message);
         
         try {
             const output = await executeWithModel("gemini-2.5-flash");
-            return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
+            return { text: output };
         } 
         catch (fallbackError: any) {
              console.warn("Fallback 1 failed, attempting gemini-2.0-flash...", fallbackError.message);
              try {
                 const output = await executeWithModel("gemini-2.0-flash");
-                return { text: output + `\n\n_(Debug: Processed ${images.length} images)_` };
+                return { text: output };
              } 
              catch (finalError: any) {
                  console.error("All LLM models failed", finalError);

@@ -58,7 +58,17 @@ export function CanvasControls() {
     )
 
     runDetails.nodeRuns.forEach((run: any) => {
-         const output = run.output as any
+         // Parse outputs if it's a string (database stores as JSON string)
+         let output = run.outputs
+         if (typeof output === 'string') {
+           try {
+             output = JSON.parse(output)
+           } catch (e) {
+             console.error('Failed to parse outputs:', e)
+             output = null
+           }
+         }
+         
          const isExecuting = run.status === 'RUNNING'
          const isCompleted = run.status === 'COMPLETED'
          const isFailed = run.status === 'FAILED'

@@ -26,6 +26,16 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
   
   const executeMutation = api.execution.executeLLMNode.useMutation()
 
+  // Sync nodeData changes to local state (for workflow execution results)
+  useEffect(() => {
+    if (nodeData.result !== undefined && nodeData.result !== result) {
+      setResult(nodeData.result)
+    }
+    if (nodeData.isExecuting !== undefined) {
+      setIsExecuting(nodeData.isExecuting)
+    }
+  }, [nodeData.result, nodeData.isExecuting])
+
   const handleExecute = async () => {
     setIsExecuting(true)
     
@@ -217,9 +227,9 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
                 </div>
             </div>
             
-            <div className="min-h-[150px] max-h-[400px] bg-[#18181B] rounded-xl border border-zinc-700/50 p-4 relative group">
+            <div className="min-h-[150px] max-h-[400px] bg-[#18181B] rounded-xl border border-zinc-700/50 p-5 relative group">
                 {result || isExecuting ? (
-                        <div className="text-sm text-zinc-300 font-mono whitespace-pre-wrap leading-relaxed h-full overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+                        <div className="text-[15px] text-zinc-200 whitespace-pre-wrap leading-[1.7] h-full overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
                         {result}
                         {isExecuting && <span className="animate-pulse inline-block w-2 h-4 bg-teal-500 ml-1 align-middle"></span>}
                         </div>
