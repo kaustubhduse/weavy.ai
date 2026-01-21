@@ -227,7 +227,7 @@ export function LLMNode({ id, data }: NodeProps<Node<any>>) {
                 </div>
             </div>
             
-            <div className="min-h-[150px] max-h-[400px] bg-[#18181B] rounded-xl border border-zinc-700/50 p-5 relative group">
+            <div className="min-h-[150px] max-h-[400px] bg-[#18181B] rounded-xl border border-zinc-700/50 p-5 relative group overflow-hidden flex flex-col">
                 {result || isExecuting ? (
                         <div className="text-[15px] text-zinc-200 whitespace-pre-wrap leading-[1.7] h-full overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
                         {result}
