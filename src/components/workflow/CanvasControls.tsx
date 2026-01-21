@@ -118,6 +118,7 @@ export function CanvasControls() {
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-[#18181B] border border-zinc-800 rounded-full shadow-xl p-1 gap-1">
       {/* Fit View - Blue Pill Button */}
       <Button
+        suppressHydrationWarning
         onClick={() => fitView({ duration: 800 })}
         className="h-9 w-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white p-0 shadow-lg shadow-blue-900/20"
       >
@@ -129,6 +130,7 @@ export function CanvasControls() {
 
       {/* Zoom Controls */}
       <Button
+        suppressHydrationWarning
         variant="ghost"
         size="icon"
         onClick={() => zoomIn({ duration: 800 })}
@@ -138,6 +140,7 @@ export function CanvasControls() {
       </Button>
       
       <Button
+        suppressHydrationWarning
         variant="ghost"
         size="icon"
         onClick={() => zoomOut({ duration: 800 })}
@@ -151,6 +154,7 @@ export function CanvasControls() {
 
       {/* History Controls */}
       <Button
+        suppressHydrationWarning
         variant="ghost"
         size="icon"
         onClick={undo}
@@ -161,6 +165,7 @@ export function CanvasControls() {
       </Button>
       
       <Button
+        suppressHydrationWarning
         variant="ghost"
         size="icon"
         onClick={redo}
@@ -175,6 +180,7 @@ export function CanvasControls() {
 
        {/* Run Button */}
        <Button
+        suppressHydrationWarning
         onClick={handleRun}
         disabled={runWorkflow.isPending}
         className="h-9 px-4 rounded-full bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 flex items-center gap-2"

@@ -292,10 +292,10 @@ export default function HomePage() {
         <div className="bg-black py-6 px-[5%]">
           <div className="bg-zinc-900 rounded-lg px-6 py-3">
             <div className="flex items-center gap-0 mb-4">
-              <button className="text-white px-4 py-2 rounded-md" style={{ backgroundColor: '#353539', fontSize: '12px' }}>
+              <button suppressHydrationWarning className="text-white px-4 py-2 rounded-md" style={{ backgroundColor: '#353539', fontSize: '12px' }}>
                 Workflow library
               </button>
-              <button className="text-zinc-400 hover:text-white px-4 py-2 rounded-md hover:bg-zinc-700" style={{ fontSize: '12px' }}>
+              <button suppressHydrationWarning className="text-zinc-400 hover:text-white px-4 py-2 rounded-md hover:bg-zinc-700" style={{ fontSize: '12px' }}>
                 Tutorials
               </button>
             </div>
@@ -339,6 +339,7 @@ export default function HomePage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <Input
+                  suppressHydrationWarning
                   placeholder="Search"
                   className="pl-9 bg-zinc-900 border-zinc-800 text-white w-64 h-9 focus-visible:ring-1 focus-visible:ring-zinc-700 placeholder:text-zinc-600"
                   value={searchQuery}
@@ -402,7 +403,7 @@ export default function HomePage() {
                             <div className="pt-2 bg-transparent px-1">
                                 <div className="text-white text-sm font-medium truncate">{folder.name}</div>
                                 <div className="text-zinc-500 text-xs mt-0.5">
-                                Last edited {formatDate(folder.updatedAt)}
+                                Last edited <span suppressHydrationWarning>{formatDate(folder.updatedAt)}</span>
                                 </div>
                             </div>
                             </Card>
@@ -437,7 +438,7 @@ export default function HomePage() {
                             </div>
                             <div className="pt-2 bg-transparent px-1">
                                 <div className="text-white text-sm font-medium truncate">{workflow.name}</div>
-                                <div className="text-zinc-500 text-xs mt-0.5">{formatDate(workflow.updatedAt)}</div>
+                                <div className="text-zinc-500 text-xs mt-0.5"><span suppressHydrationWarning>{formatDate(workflow.updatedAt)}</span></div>
                             </div>
                             </Card>
                         </ContextMenuTrigger>
@@ -516,10 +517,10 @@ export default function HomePage() {
                                         </div>
                                         <div className="col-span-2 text-white text-right"> - </div>
                                         <div className="col-span-3 text-white text-right">
-                                            {formatDate(item.updatedAt)}
+                                            <span suppressHydrationWarning>{formatDate(item.updatedAt)}</span>
                                         </div>
                                         <div className="col-span-2 text-white text-right">
-                                            {formatDate(item.createdAt)}
+                                            <span suppressHydrationWarning>{formatDate(item.createdAt)}</span>
                                         </div>
                                     </div>
                                 </ContextMenuTrigger>
@@ -552,10 +553,10 @@ export default function HomePage() {
                                         {item.workflows?.length || 0} Files
                                     </div>
                                     <div className="col-span-3 text-white text-right">
-                                        {formatDate(item.updatedAt)}
+                                        <span suppressHydrationWarning>{formatDate(item.updatedAt)}</span>
                                     </div>
                                     <div className="col-span-2 text-white text-right">
-                                        {formatDate(item.createdAt)}
+                                        <span suppressHydrationWarning>{formatDate(item.createdAt)}</span>
                                     </div>
                                     </div>
                                 </ContextMenuTrigger>

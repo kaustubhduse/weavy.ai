@@ -33,7 +33,7 @@ export const workflowRouter = createTRPCRouter({
         },
       })
 
-      if (!workflow || workflow.userId !== ctx.userId) {
+      if (!workflow || (workflow.userId !== ctx.userId && workflow.userId !== 'sample_user')) {
         throw new Error('Workflow not found')
       }
 
@@ -42,7 +42,12 @@ export const workflowRouter = createTRPCRouter({
 
   list: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.workflow.findMany({
-      where: { userId: ctx.userId },
+      where: {
+        OR: [
+          { userId: ctx.userId },
+          { userId: 'sample_user' }
+        ]
+      },
       orderBy: { updatedAt: 'desc' },
       include: {
         nodes: true,

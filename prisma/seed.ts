@@ -12,25 +12,24 @@ async function main() {
   console.log('✅ Cleanup complete!')
   console.log('🌱 Seeding database...')
   
-  const userId = 'sample_user'
+  const userId = 'user_demo'
   
-  // Create the comprehensive marketing workflow
   const workflow = await prisma.workflow.create({
     data: {
-      name: 'Workflow-1',
-      description: 'Professional marketing content generator with image and video processing',
-      userId: userId,
+      id: 'cmki5l2000000jr049y6o5wet',
+      name: 'Workfow-1',
+      description: 'Sample workflow with various node types',
+      userId: 'sample_user',
       viewport: { x: 0, y: 0, zoom: 1 },
     },
   })
 
   console.log('Created workflow:', workflow.id)
 
-  // Define all nodes with proper data structure
   const nodes = [
     {
       id: 'text-1768645040538',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'text',
       position: { x: 176, y: 35 },
       data: {
@@ -40,7 +39,7 @@ async function main() {
     },
     {
       id: 'text-1768645043539',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'text',
       position: { x: 175.7997827403863, y: 242.3998913701931 },
       data: {
@@ -50,31 +49,33 @@ async function main() {
     },
     {
       id: 'upload-image-1768645111874',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'upload-image',
       position: { x: 177.3928217798758, y: 473.1866212280131 },
       data: {
         label: 'Upload Image',
         fileName: 'headphones.jpg',
-        imageData: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
+        imageData: 'https://media.istockphoto.com/id/1412240771/photo/headphones-on-white-background.jpg?s=612x612&w=0&k=20&c=DwpnlOcMzclX8zJDKOMSqcXdc1E7gyGYgfX5Xr753aQ=',
       },
     },
     {
       id: 'crop-image-1768645150506',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'crop-image',
       position: { x: 747.4383886255923, y: 495.8530805687204 },
       data: {
         x: 0,
         y: 0,
+        error: 'FFmpeg processing failed: Failed to download file: Not Found (404)',
         label: 'Crop Image',
         width: 80,
         height: 80,
+        result: 'Error: FFmpeg processing failed: Failed to download file: Not Found (404)',
       },
     },
     {
       id: 'llm-1768645295861',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'llm',
       position: { x: 1104.803676115288, y: 117.5341616689827 },
       data: {
@@ -85,18 +86,18 @@ async function main() {
     },
     {
       id: 'upload-video-1768645325887',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'upload-video',
       position: { x: 172.6995765590615, y: 978.3490772843758 },
       data: {
         label: 'Upload Video',
         fileName: 'videoplayback.mp4',
-        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        videoUrl: '/videoplayback.mp4',
       },
     },
     {
       id: 'extract-frame-1768645331048',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'extract-frame',
       position: { x: 739.9668216993994, y: 1033.692223151726 },
       data: {
@@ -106,7 +107,7 @@ async function main() {
     },
     {
       id: 'llm-1768645529195',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'llm',
       position: { x: 1885.58516003774, y: 477.7707235738891 },
       data: {
@@ -117,7 +118,7 @@ async function main() {
     },
     {
       id: 'text-1768645541249',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       type: 'text',
       position: { x: 1481.142368298401, y: 74.67453864218783 },
       data: {
@@ -129,11 +130,10 @@ async function main() {
 
   await prisma.node.createMany({ data: nodes })
 
-  // Define all edges with proper connections
   const edges = [
     {
       id: 'xy-edge__upload-image-1768645111874image-output-crop-image-1768645150506image-url-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'upload-image-1768645111874',
       target: 'crop-image-1768645150506',
       sourceHandle: 'image-output',
@@ -142,7 +142,7 @@ async function main() {
     },
     {
       id: 'xy-edge__text-1768645040538prompt-output-llm-1768645295861system_prompt-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'text-1768645040538',
       target: 'llm-1768645295861',
       sourceHandle: 'prompt-output',
@@ -151,7 +151,7 @@ async function main() {
     },
     {
       id: 'xy-edge__text-1768645043539prompt-output-llm-1768645295861user_message-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'text-1768645043539',
       target: 'llm-1768645295861',
       sourceHandle: 'prompt-output',
@@ -160,7 +160,7 @@ async function main() {
     },
     {
       id: 'xy-edge__crop-image-1768645150506image-output-llm-1768645295861images-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'crop-image-1768645150506',
       target: 'llm-1768645295861',
       sourceHandle: 'image-output',
@@ -169,7 +169,7 @@ async function main() {
     },
     {
       id: 'xy-edge__upload-video-1768645325887video-output-extract-frame-1768645331048video-url-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'upload-video-1768645325887',
       target: 'extract-frame-1768645331048',
       sourceHandle: 'video-output',
@@ -178,7 +178,7 @@ async function main() {
     },
     {
       id: 'xy-edge__text-1768645541249prompt-output-llm-1768645529195system_prompt-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'text-1768645541249',
       target: 'llm-1768645529195',
       sourceHandle: 'prompt-output',
@@ -187,7 +187,7 @@ async function main() {
     },
     {
       id: 'xy-edge__llm-1768645295861text-output-llm-1768645529195user_message-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'llm-1768645295861',
       target: 'llm-1768645529195',
       sourceHandle: 'text-output',
@@ -196,7 +196,7 @@ async function main() {
     },
     {
       id: 'xy-edge__extract-frame-1768645331048image-output-llm-1768645529195images-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'extract-frame-1768645331048',
       target: 'llm-1768645529195',
       sourceHandle: 'image-output',
@@ -205,7 +205,7 @@ async function main() {
     },
     {
       id: 'xy-edge__crop-image-1768645150506image-output-llm-1768645529195images-input',
-      workflowId: workflow.id,
+      workflowId: 'cmki5l2000000jr049y6o5wet',
       source: 'crop-image-1768645150506',
       target: 'llm-1768645529195',
       sourceHandle: 'image-output',
@@ -216,10 +216,7 @@ async function main() {
 
   await prisma.edge.createMany({ data: edges })
 
-  console.log('✅ Sample workflow created successfully!')
-  console.log(`   - Workflow: ${workflow.name}`)
-  console.log(`   - Nodes: ${nodes.length}`)
-  console.log(`   - Edges: ${edges.length}`)
+  console.log('Sample workflow created successfully!')
 }
 
 main()

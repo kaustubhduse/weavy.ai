@@ -27,6 +27,26 @@ async function downloadFile(url: string, outputPath: string) {
     return;
   }
   
+  if (cleanUrl.startsWith('/')) {
+    const publicPath = path.join(process.cwd(), 'public', cleanUrl);
+    if (fs.existsSync(publicPath)) {
+        fs.copyFileSync(publicPath, outputPath);
+        return;
+    } else {
+        // Fallback or error if not found locally
+        console.warn(`Local file not found at ${publicPath}, trying HTTP fallback...`);
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const fetchUrl = `${baseUrl}${cleanUrl}`;
+        const response = await fetch(fetchUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to download file from ${cleanUrl}: ${response.statusText} (${response.status})`);
+        }
+        const buffer = await response.arrayBuffer();
+        fs.writeFileSync(outputPath, Buffer.from(buffer));
+        return;
+    }
+  }
+  
   const response = await fetch(cleanUrl);
   if (!response.ok) {
     throw new Error(`Failed to download file from ${cleanUrl.substring(0, 50)}: ${response.statusText} (${response.status})`);
